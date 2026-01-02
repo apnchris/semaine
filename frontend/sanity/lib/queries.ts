@@ -99,3 +99,27 @@ export const pagesSlugs = defineQuery(`
   *[_type == "page" && defined(slug.current)]
   {"slug": slug.current}
 `)
+
+export const TASTEMAKER_QUERY = defineQuery(`
+  *[_type == "tasteMaker" && slug.current == $slug][0] {
+    _id,
+    name,
+    title,
+    picture {
+      asset->,
+      alt
+    }
+  }
+`)
+
+export const TASTEBREAKER_QUERY = defineQuery(`
+  *[_type == "tasteBreaker" && slug.current == $slug][0] {
+    _id,
+    name,
+    title,
+    picture {
+      asset->,
+      alt
+    }
+  }
+`)

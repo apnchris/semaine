@@ -8,6 +8,7 @@ import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'
 import {schemaTypes} from './src/schemaTypes'
 import {structure} from './src/structure'
+import {SyncProductsAction} from './src/lib/actions/syncProducts'
 import {unsplashImageAsset} from 'sanity-plugin-asset-source-unsplash'
 import {
   presentationTool,
@@ -131,5 +132,16 @@ export default defineConfig({
   // Schema configuration, imported from ./src/schemaTypes/index.ts
   schema: {
     types: schemaTypes,
+  },
+
+  // Document actions
+  document: {
+    actions: (prev, context) => {
+      // Add sync action for shopifySync documents
+      if (context.schemaType === 'shopifySync') {
+        return [SyncProductsAction, ...prev]
+      }
+      return prev
+    },
   },
 })
