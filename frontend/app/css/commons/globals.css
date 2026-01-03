@@ -96,6 +96,12 @@ input:-webkit-autofill:active {
   text-transform: uppercase;
 }
 
+.main-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 10px;
+}
+
 @media only screen and (min-width: 820px) {
   .hide-desktop {
     display: none!important;

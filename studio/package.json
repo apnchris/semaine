@@ -19,9 +19,11 @@
   "dependencies": {
     "@sanity/assist": "^5.0.2",
     "@sanity/client": "^7.13.2",
+    "@sanity/color-input": "^6.0.2",
     "@sanity/icons": "^3.7.4",
     "@sanity/vision": "^5.1.0",
     "date-fns": "^4.1.0",
+    "lodash.get": "^4.4.2",
     "pluralize-esm": "^9.0.5",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",

@@ -1,105 +1,160 @@
 import {notFound} from 'next/navigation'
 import {sanityFetch} from '@/sanity/lib/live'
-import {getProduct} from '@/lib/shopify'
 import {defineQuery} from 'next-sanity'
-import SanityImage from '@/app/components/SanityImage'
+import AddToCart from '@/app/components/AddToCart'
 
 type Props = {
   params: Promise<{slug: string}>
 }
 
 const PRODUCT_QUERY = defineQuery(`
-  *[_type == "product" && slug.current == $slug][0] {
+  *[_type == "product" && store.slug.current == $slug][0] {
     _id,
-    shopifyId,
-    handle,
-    title,
-    description,
-    featuredImage {
-      asset->{
-        _id,
-        url
-      },
-      alt
+    _type,
+    _createdAt,
+    _updatedAt,
+    colorTheme->{
+      title,
+      text,
+      background
     },
-    tasteMakers[]->{name, slug}
+    body,
+    store {
+      id,
+      title,
+      slug,
+      status,
+      isDeleted,
+      previewImageUrl,
+      priceRange,
+      descriptionHtml,
+      options,
+      variants[]->{
+        _id,
+        store {
+          id,
+          gid,
+          title,
+          price,
+          compareAtPrice,
+          sku,
+          inventory {
+            isAvailable,
+            management,
+            policy
+          }
+        }
+      },
+      productType,
+      tags,
+      vendor,
+      images
+    },
+    seo {
+      title,
+      description,
+      image
+    }
   }
 `)
 
 export default async function ProductPage({params}: Props) {
   const {slug} = await params
   
-  // Get Sanity content
+  // Get Sanity product with all data
   const {data: sanityProduct} = await sanityFetch({
     query: PRODUCT_QUERY,
     params: {slug},
   })
   
-  if (!sanityProduct) notFound()
-  
-  // Get live Shopify data
-  const shopifyProduct = await getProduct(sanityProduct.handle)
+  if (!sanityProduct || !sanityProduct.store) notFound()
   
   return (
     <article className="product-page">
-      {/* Featured Image */}
-      {sanityProduct.featuredImage ? (
-        <div className="product-image">
-          <SanityImage
-            id={sanityProduct.featuredImage.asset._id}
-            alt={sanityProduct.featuredImage.alt || sanityProduct.title || shopifyProduct.title}
-            width={800}
-            height={800}
-          />
-        </div>
-      ) : shopifyProduct.images?.edges?.[0]?.node ? (
+      {/* Featured Image from Shopify */}
+      {sanityProduct.store.previewImageUrl && (
         <div className="product-image">
           <img
-            src={shopifyProduct.images.edges[0].node.url}
-            alt={shopifyProduct.images.edges[0].node.altText || shopifyProduct.title}
+            src={sanityProduct.store.previewImageUrl}
+            alt={sanityProduct.store.title}
             width={800}
             height={800}
           />
         </div>
-      ) : null}
+      )}
 
-      <h1>{sanityProduct.title || shopifyProduct.title}</h1>
+      <h1>{sanityProduct.store.title}</h1>
       
-      {sanityProduct.description && (
+      {/* Editorial Content from Sanity */}
+      {sanityProduct.body && (
         <div className="product-description">
-          {/* You can render portable text here if needed */}
-          <p>{sanityProduct.description}</p>
+          {/* You can render portable text here with a PortableText component */}
+          <p>Editorial content available</p>
         </div>
       )}
       
-      {shopifyProduct.descriptionHtml && (
+      {/* Shopify Description */}
+      {sanityProduct.store.descriptionHtml && (
         <div 
           className="shopify-description" 
-          dangerouslySetInnerHTML={{__html: shopifyProduct.descriptionHtml}}
+          dangerouslySetInnerHTML={{__html: sanityProduct.store.descriptionHtml}}
         />
       )}
 
-      {/* Price */}
-      {shopifyProduct.priceRange && (
+      {/* Price Range */}
+      {sanityProduct.store.priceRange && (
         <div className="product-price">
           <span className="price">
-            {shopifyProduct.priceRange.minVariantPrice.currencyCode}{' '}
-            {shopifyProduct.priceRange.minVariantPrice.amount}
+            {sanityProduct.store.priceRange.minVariantPrice.currencyCode}{' '}
+            {sanityProduct.store.priceRange.minVariantPrice.amount}
           </span>
         </div>
       )}
 
-      {/* Tastemakers */}
-      {sanityProduct.tasteMakers && sanityProduct.tasteMakers.length > 0 && (
-        <div className="product-tastemakers">
-          <h3>Recommended by:</h3>
-          <ul>
-            {sanityProduct.tasteMakers.map((tm: any) => (
-              <li key={tm.slug.current}>
-                <a href={`/tastemakers/${tm.slug.current}`}>{tm.name}</a>
-              </li>
-            ))}
-          </ul>
+      {/* Product Details */}
+      <div className="product-details">
+        {sanityProduct.store.vendor && (
+          <p><strong>Vendor:</strong> {sanityProduct.store.vendor}</p>
+        )}
+        {sanityProduct.store.productType && (
+          <p><strong>Type:</strong> {sanityProduct.store.productType}</p>
+        )}
+        {sanityProduct.store.tags && sanityProduct.store.tags.length > 0 && (
+          <p><strong>Tags:</strong> {sanityProduct.store.tags.join(', ')}</p>
+        )}
+      </div>
+
+      {/* Add to Cart */}
+      {sanityProduct.store.variants && sanityProduct.store.variants.length > 0 && (
+        <AddToCart 
+          variants={sanityProduct.store.variants}
+          productTitle={sanityProduct.store.title}
+        />
+      )}
+
+      {/* Options */}
+      {sanityProduct.store.options && sanityProduct.store.options.length > 0 && (
+        <div className="product-options">
+          <h3>Options:</h3>
+          {sanityProduct.store.options.map((option: any) => (
+            <div key={option.name}>
+              <strong>{option.name}:</strong> {option.values.join(', ')}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Color Theme */}
+      {sanityProduct.colorTheme && (
+        <div className="product-color-theme">
+          <p><strong>Color Theme:</strong> {sanityProduct.colorTheme.title}</p>
+        </div>
+      )}
+
+      {/* SEO */}
+      {sanityProduct.seo && (
+        <div className="product-seo" style={{display: 'none'}}>
+          <p>SEO configured</p>
         </div>
       )}
     </article>

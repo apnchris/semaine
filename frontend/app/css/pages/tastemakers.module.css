@@ -1,0 +1,54 @@
+.introFilters {
+  padding: 130px 10px 90px;
+}
+
+.filters {
+  grid-column: span 3;
+}
+
+.intro {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  grid-column: span 6;
+}
+
+.profileGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  padding: 0 5px;
+  row-gap: 20px;
+}
+
+.profileCard {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.profileImage {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 24px;
+}
+
+.profileImageWrapper {
+  padding: 10px;
+}
+
+.tastemakerCard .profileImageWrapper {
+  background-color: #6881F5;
+}
+
+.tastebreakerCard .profileImageWrapper {
+  background-color: #FFBD00;
+}
+
+.profileInfo {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  padding: 0 15px;
+}

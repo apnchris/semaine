@@ -1,5 +1,41 @@
 body {
-  font-family: sans-serif;
-  background: black;
-  color: white;
+  font-weight: 600;
+  letter-spacing: -.06em;
+  line-height: 1.1;
+}
+
+.logo {
+  position: fixed;
+  top: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  width: 120px;
+  line-height: 0;
+}
+
+.font-xs {
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+.font-s {
+  font-size: 13px;
+  line-height: 1.2;
+}
+
+.font-sm {
+  font-size: 15px;
+  line-height: 1.1;
+}
+
+.font-m {
+  font-size: 21px;
+  line-height: 1;
+}
+
+.font-l {
+  font-size: 37px;
+  line-height: .9;
+  letter-spacing: -.06em;
 }

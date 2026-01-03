@@ -1,4 +1,4 @@
-import {CogIcon, FolderIcon, PackageIcon, RefreshIcon} from '@sanity/icons'
+import {CogIcon, FolderIcon, PackageIcon} from '@sanity/icons'
 import type {StructureBuilder, StructureResolver} from 'sanity/structure'
 import pluralize from 'pluralize-esm'
 
@@ -11,38 +11,55 @@ import pluralize from 'pluralize-esm'
 const DISABLED_TYPES = [
   'settings',
   'assist.instruction.context',
+  'tasteMakers',
   'tasteMaker',
   'tasteBreaker',
   'product',
-  'shopifySync',
+  'colorTheme',
+  'collection',
+  'productVariant',
+  'home',
+  'page',
+  'interest',
+  'location',
+  'category',
 ]
 
 export const structure: StructureResolver = (S: StructureBuilder) =>
   S.list()
-    .title('Website Content')
+    .title('Content')
     .items([
       S.listItem()
-        .title('Taste Makers')
+        .title('Settings')
+        .child(S.document().schemaType('settings').documentId('siteSettings'))
+        .icon(CogIcon),
+      S.listItem()
+        .title('Interests')
+        .child(S.documentTypeList('interest').title('Interests'))
+        .icon(FolderIcon),
+      S.listItem()
+        .title('Locations')
+        .child(S.documentTypeList('location').title('Locations'))
+        .icon(FolderIcon),
+      S.listItem()
+        .title('Categories')
+        .child(S.documentTypeList('category').title('Categories'))
+        .icon(FolderIcon),
+
+      S.divider(),
+
+      S.listItem()
+        .title('TasteMakers')
         .child(S.documentTypeList('tasteMaker').title('Taste Makers'))
         .icon(FolderIcon),
       S.listItem()
-        .title('Taste Breakers')
+        .title('TasteBreakers')
         .child(S.documentTypeList('tasteBreaker').title('Taste Breakers'))
         .icon(FolderIcon),
       S.listItem()
         .title('Products')
         .child(S.documentTypeList('product').title('Products'))
         .icon(PackageIcon),
-      
-      S.divider(),
-
-      // Shopify Sync
-      S.listItem()
-        .title('Sync Shopify Products')
-        .child(S.document().schemaType('shopifySync').documentId('shopifySync'))
-        .icon(RefreshIcon),
-      
-      S.divider(),
 
       // Other document types
       ...S.documentTypeListItems()
@@ -50,12 +67,13 @@ export const structure: StructureResolver = (S: StructureBuilder) =>
         .map((listItem) => {
           return listItem.title(pluralize(listItem.getTitle() as string))
         }),
+      
+      S.divider(),
+
+      S.listItem()
+        .title('TasteMakers and TasteBreakers')
+        .child(S.document().schemaType('tasteMakers').documentId('tasteMakers'))
+        .icon(FolderIcon),
 
       S.divider(),
-      
-      // Settings
-      S.listItem()
-        .title('Site Settings')
-        .child(S.document().schemaType('settings').documentId('siteSettings'))
-        .icon(CogIcon),
     ])

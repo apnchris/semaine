@@ -274,3 +274,299 @@ export async function searchProducts(query: string, first: number = 24) {
 
   return data.products.edges.map((edge: any) => edge.node)
 }
+
+// CART API (New Shopify Standard)
+
+// Create a new cart
+export async function createCart() {
+  const query = `
+    mutation cartCreate {
+      cartCreate {
+        cart {
+          id
+          checkoutUrl
+          lines(first: 10) {
+            edges {
+              node {
+                id
+                quantity
+                merchandise {
+                  ... on ProductVariant {
+                    id
+                    title
+                    product {
+                      title
+                      handle
+                    }
+                    priceV2 {
+                      amount
+                      currencyCode
+                    }
+                  }
+                }
+              }
+            }
+          }
+          cost {
+            totalAmount {
+              amount
+              currencyCode
+            }
+            subtotalAmount {
+              amount
+              currencyCode
+            }
+          }
+        }
+        userErrors {
+          field
+          message
+        }
+      }
+    }
+  `
+
+  const data = await shopifyFetch<{cartCreate: any}>({query})
+  return data.cartCreate.cart
+}
+
+// Add items to cart
+export async function addToCart(cartId: string, lines: Array<{merchandiseId: string; quantity: number}>) {
+  const query = `
+    mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) {
+      cartLinesAdd(cartId: $cartId, lines: $lines) {
+        cart {
+          id
+          checkoutUrl
+          lines(first: 100) {
+            edges {
+              node {
+                id
+                quantity
+                merchandise {
+                  ... on ProductVariant {
+                    id
+                    title
+                    product {
+                      title
+                      handle
+                    }
+                    priceV2 {
+                      amount
+                      currencyCode
+                    }
+                    image {
+                      url
+                      altText
+                    }
+                  }
+                }
+              }
+            }
+          }
+          cost {
+            totalAmount {
+              amount
+              currencyCode
+            }
+            subtotalAmount {
+              amount
+              currencyCode
+            }
+          }
+        }
+        userErrors {
+          field
+          message
+        }
+      }
+    }
+  `
+
+  const data = await shopifyFetch<{cartLinesAdd: any}>({
+    query,
+    variables: {cartId, lines},
+  })
+
+  return data.cartLinesAdd.cart
+}
+
+// Update cart line items
+export async function updateCartLines(
+  cartId: string,
+  lines: Array<{id: string; quantity: number}>,
+) {
+  const query = `
+    mutation cartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!) {
+      cartLinesUpdate(cartId: $cartId, lines: $lines) {
+        cart {
+          id
+          checkoutUrl
+          lines(first: 100) {
+            edges {
+              node {
+                id
+                quantity
+                merchandise {
+                  ... on ProductVariant {
+                    id
+                    title
+                    product {
+                      title
+                      handle
+                    }
+                    priceV2 {
+                      amount
+                      currencyCode
+                    }
+                    image {
+                      url
+                      altText
+                    }
+                  }
+                }
+              }
+            }
+          }
+          cost {
+            totalAmount {
+              amount
+              currencyCode
+            }
+            subtotalAmount {
+              amount
+              currencyCode
+            }
+          }
+        }
+        userErrors {
+          field
+          message
+        }
+      }
+    }
+  `
+
+  const data = await shopifyFetch<{cartLinesUpdate: any}>({
+    query,
+    variables: {cartId, lines},
+  })
+
+  return data.cartLinesUpdate.cart
+}
+
+// Remove items from cart
+export async function removeFromCart(cartId: string, lineIds: string[]) {
+  const query = `
+    mutation cartLinesRemove($cartId: ID!, $lineIds: [ID!]!) {
+      cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {
+        cart {
+          id
+          checkoutUrl
+          lines(first: 100) {
+            edges {
+              node {
+                id
+                quantity
+                merchandise {
+                  ... on ProductVariant {
+                    id
+                    title
+                    product {
+                      title
+                      handle
+                    }
+                    priceV2 {
+                      amount
+                      currencyCode
+                    }
+                    image {
+                      url
+                      altText
+                    }
+                  }
+                }
+              }
+            }
+          }
+          cost {
+            totalAmount {
+              amount
+              currencyCode
+            }
+            subtotalAmount {
+              amount
+              currencyCode
+            }
+          }
+        }
+        userErrors {
+          field
+          message
+        }
+      }
+    }
+  `
+
+  const data = await shopifyFetch<{cartLinesRemove: any}>({
+    query,
+    variables: {cartId, lineIds},
+  })
+
+  return data.cartLinesRemove.cart
+}
+
+// Get cart by ID
+export async function getCart(cartId: string) {
+  const query = `
+    query cart($cartId: ID!) {
+      cart(id: $cartId) {
+        id
+        checkoutUrl
+        lines(first: 100) {
+          edges {
+            node {
+              id
+              quantity
+              merchandise {
+                ... on ProductVariant {
+                  id
+                  title
+                  product {
+                    title
+                    handle
+                  }
+                  priceV2 {
+                    amount
+                    currencyCode
+                  }
+                  image {
+                    url
+                    altText
+                  }
+                }
+              }
+            }
+          }
+        }
+        cost {
+          totalAmount {
+            amount
+            currencyCode
+          }
+          subtotalAmount {
+            amount
+            currencyCode
+          }
+        }
+      }
+    }
+  `
+
+  const data = await shopifyFetch<{cart: any}>({
+    query,
+    variables: {cartId},
+  })
+
+  return data.cart
+}

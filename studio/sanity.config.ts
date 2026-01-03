@@ -8,7 +8,6 @@ import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'
 import {schemaTypes} from './src/schemaTypes'
 import {structure} from './src/structure'
-import {SyncProductsAction} from './src/lib/actions/syncProducts'
 import {unsplashImageAsset} from 'sanity-plugin-asset-source-unsplash'
 import {
   presentationTool,
@@ -17,6 +16,7 @@ import {
   type DocumentLocation,
 } from 'sanity/presentation'
 import {assist} from '@sanity/assist'
+import {colorInput} from '@sanity/color-input'
 
 // Environment variables for project configuration
 const projectId = process.env.SANITY_STUDIO_PROJECT_ID || 'your-projectID'
@@ -48,7 +48,7 @@ function resolveHref(documentType?: string, slug?: string): string | undefined {
 // Main Sanity configuration
 export default defineConfig({
   name: 'default',
-  title: 'Sanity + Next.js Starter Template',
+  title: 'Semaine',
 
   projectId,
   dataset,
@@ -124,6 +124,7 @@ export default defineConfig({
       structure, // Custom studio structure configuration, imported from ./src/structure.ts
     }),
     // Additional plugins for enhanced functionality
+    colorInput(),
     unsplashImageAsset(),
     assist(),
     visionTool(),
@@ -132,16 +133,5 @@ export default defineConfig({
   // Schema configuration, imported from ./src/schemaTypes/index.ts
   schema: {
     types: schemaTypes,
-  },
-
-  // Document actions
-  document: {
-    actions: (prev, context) => {
-      // Add sync action for shopifySync documents
-      if (context.schemaType === 'shopifySync') {
-        return [SyncProductsAction, ...prev]
-      }
-      return prev
-    },
   },
 })

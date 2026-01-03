@@ -1,62 +1,70 @@
-import {defineField, defineType} from 'sanity'
 import {DocumentIcon} from '@sanity/icons'
+import {defineField} from 'sanity'
 
-/**
- * Page schema.  Define and edit the fields for the 'page' content type.
- * Learn more: https://www.sanity.io/docs/schema-types
- */
+import {validateSlug} from '../../utils/validateSlug'
+import { GROUPS } from '../../constants'
 
-export const page = defineType({
+export const pageType = defineField({
   name: 'page',
   title: 'Page',
   type: 'document',
   icon: DocumentIcon,
+  groups: GROUPS,
   fields: [
     defineField({
-      name: 'name',
-      title: 'Name',
+      name: 'title',
+      group: 'editorial',
       type: 'string',
       validation: (Rule) => Rule.required(),
     }),
-
     defineField({
       name: 'slug',
-      title: 'Slug',
+      group: 'editorial',
       type: 'slug',
-      validation: (Rule) => Rule.required(),
-      options: {
-        source: 'name',
-        maxLength: 96,
-      },
+      options: {source: 'title'},
+      validation: validateSlug,
     }),
     defineField({
-      name: 'heading',
-      title: 'Heading',
-      type: 'string',
-      validation: (Rule) => Rule.required(),
+      name: 'colorTheme',
+      type: 'reference',
+      to: [{type: 'colorTheme'}],
+      group: 'theme',
     }),
     defineField({
-      name: 'subheading',
-      title: 'Subheading',
-      type: 'string',
+      name: 'showHero',
+      type: 'boolean',
+      description: 'If disabled, page title will be displayed instead',
+      initialValue: false,
+      group: 'editorial',
     }),
     defineField({
-      name: 'pageBuilder',
-      title: 'Page builder',
-      type: 'array',
-      of: [{type: 'callToAction'}, {type: 'infoSection'}],
-      options: {
-        insertMenu: {
-          // Configure the "Add Item" menu to display a thumbnail preview of the content type. https://www.sanity.io/docs/array-type#efb1fe03459d
-          views: [
-            {
-              name: 'grid',
-              previewImageUrl: (schemaTypeName) =>
-                `/static/page-builder-thumbnails/${schemaTypeName}.webp`,
-            },
-          ],
-        },
-      },
+      name: 'hero',
+      type: 'hero',
+      hidden: ({document}) => !document?.showHero,
+      group: 'editorial',
+    }),
+    defineField({
+      name: 'body',
+      type: 'portableText',
+      group: 'editorial',
+    }),
+    defineField({
+      name: 'seo',
+      title: 'SEO',
+      type: 'seo',
+      group: 'seo',
     }),
   ],
+  preview: {
+    select: {
+      seoImage: 'seo.image',
+      title: 'title',
+    },
+    prepare({seoImage, title}) {
+      return {
+        media: seoImage ?? DocumentIcon,
+        title,
+      }
+    },
+  },
 })
