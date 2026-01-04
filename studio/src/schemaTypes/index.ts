@@ -107,6 +107,7 @@ import {tasteBreaker} from './documents/tasteBreaker'
 import {interest} from './documents/interest'
 import {location} from './documents/location'
 import {category} from './documents/category'
+import {learnEntry} from './documents/learnEntry'
 
 const documents = [
   collectionType,
@@ -118,17 +119,20 @@ const documents = [
   tasteBreaker,
   interest,
   location,
-  category
+  category,
+  learnEntry
 ]
 
 import {homeType} from './singletons/homeType'
 import {settingsType} from './singletons/settingsType'
 import {tasteMakers} from './singletons/tasteMakers'
+import {learn} from './singletons/learn'
 
 const singletons = [
   homeType,
   settingsType,
-  tasteMakers
+  tasteMakers,
+  learn
 ]
 
 export const schemaTypes = [...annotations, ...objects, ...singletons, ...blocks, ...documents]

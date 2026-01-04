@@ -19,3 +19,41 @@ body {
   width: 120px;
   line-height: 0;
 }
+
+/* ------------------------------------------------------------ */
+
+/*                         VIEW MODES                           */
+
+/* ------------------------------------------------------------ */
+
+.viewToggle {
+  position: fixed;
+  z-index: 100;
+  bottom: 66px;
+  display: flex;
+  border-radius: 22px;
+  padding: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: opacity 0.2s ease;
+}
+
+body.at-bottom .viewToggle {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.viewToggle svg {
+  height: 20px;
+  fill: currentColor;
+}
+
+.viewToggleButton {
+  height: 37px;
+  width: 67px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  border-radius: 22px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}

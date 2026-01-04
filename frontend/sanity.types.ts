@@ -556,7 +556,7 @@ export declare const internalGroqTypeReferenceTo: unique symbol
 
 // Source: sanity/lib/queries.ts
 // Variable: settingsQuery
-// Query: *[_type == "settings"][0]
+// Query: *[_type == "settings"][0]{    ...,    footer{      links[]{        title,        links[]{          _type,          text,          url,          newWindow,          _type == 'linkCredits' => {            title,            credits          }        }      },      newsletterText    }  }
 export type SettingsQueryResult = {
   _id: string
   _type: 'settings'
@@ -610,6 +610,7 @@ export type SettingsQueryResult = {
     metadataBase?: string
     _type: 'image'
   }
+  footer: null
 } | null
 
 // Source: sanity/lib/queries.ts
@@ -907,11 +908,16 @@ export type TASTEMAKER_QUERY_RESULT = null
 // Query: *[_type == "tasteBreaker" && slug.current == $slug][0] {    _id,    name,    title,    picture {      asset->,      alt    }  }
 export type TASTEBREAKER_QUERY_RESULT = null
 
+// Source: sanity/lib/queries.ts
+// Variable: allProductsQuery
+// Query: *[_type == "product" && !store.isDeleted] | order(store.title asc) {    _id,    _type,    colorTheme->{      title,      text,      background    },    store {      id,      title,      slug,      status,      previewImageUrl,      priceRange,      productType,      vendor,      tags    },    seo {      title,      description    }  }
+export type AllProductsQueryResult = Array<never>
+
 // Query TypeMap
 import '@sanity/client'
 declare module '@sanity/client' {
   interface SanityQueries {
-    '*[_type == "settings"][0]': SettingsQueryResult
+    '\n  *[_type == "settings"][0]{\n    ...,\n    footer{\n      links[]{\n        title,\n        links[]{\n          _type,\n          text,\n          url,\n          newWindow,\n          _type == \'linkCredits\' => {\n            title,\n            credits\n          }\n        }\n      },\n      newsletterText\n    }\n  }\n': SettingsQueryResult
     '\n  *[_type == \'page\' && slug.current == $slug][0]{\n    _id,\n    _type,\n    name,\n    slug,\n    heading,\n    subheading,\n    "pageBuilder": pageBuilder[]{\n      ...,\n      _type == "callToAction" => {\n        ...,\n        button {\n          ...,\n          \n  link {\n      ...,\n      \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n      }\n\n        }\n      },\n      _type == "infoSection" => {\n        content[]{\n          ...,\n          markDefs[]{\n            ...,\n            \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n          }\n        }\n      },\n    },\n  }\n': GetPageQueryResult
     '\n  *[_type == "page" || _type == "post" && defined(slug.current)] | order(_type asc) {\n    "slug": slug.current,\n    _type,\n    _updatedAt,\n  }\n': SitemapDataResult
     '\n  *[_type == "post" && defined(slug.current)] | order(date desc, _updatedAt desc) {\n    \n  _id,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  "title": coalesce(title, "Untitled"),\n  "slug": slug.current,\n  excerpt,\n  coverImage,\n  "date": coalesce(date, _updatedAt),\n  "author": author->{firstName, lastName, picture},\n\n  }\n': AllPostsQueryResult
@@ -921,5 +927,6 @@ declare module '@sanity/client' {
     '\n  *[_type == "page" && defined(slug.current)]\n  {"slug": slug.current}\n': PagesSlugsResult
     '\n  *[_type == "tasteMaker" && slug.current == $slug][0] {\n    _id,\n    name,\n    title,\n    picture {\n      asset->,\n      alt\n    }\n  }\n': TASTEMAKER_QUERY_RESULT
     '\n  *[_type == "tasteBreaker" && slug.current == $slug][0] {\n    _id,\n    name,\n    title,\n    picture {\n      asset->,\n      alt\n    }\n  }\n': TASTEBREAKER_QUERY_RESULT
+    '\n  *[_type == "product" && !store.isDeleted] | order(store.title asc) {\n    _id,\n    _type,\n    colorTheme->{\n      title,\n      text,\n      background\n    },\n    store {\n      id,\n      title,\n      slug,\n      status,\n      previewImageUrl,\n      priceRange,\n      productType,\n      vendor,\n      tags\n    },\n    seo {\n      title,\n      description\n    }\n  }\n': AllProductsQueryResult
   }
 }

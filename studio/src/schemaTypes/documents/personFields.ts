@@ -60,4 +60,10 @@ export const personFields = [
       },
     },
   }),
+  defineField({
+    name: 'excerpt',
+    title: 'Excerpt',
+    type: 'text',
+    rows: 4
+  }),
 ]

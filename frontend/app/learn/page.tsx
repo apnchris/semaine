@@ -1,24 +1,22 @@
 import type {Metadata, ResolvingMetadata} from 'next'
 import {sanityFetch} from '@/sanity/lib/live'
 import {defineQuery} from 'next-sanity'
-import TastemakersClient from './TastemakersClient'
-import {resolveOpenGraphImage} from '@/sanity/lib/utils'
+import LearnClient from './LearnClient'
 
 type Props = {
   params: Promise<{slug: string}>
 }
 
-interface Person {
+interface LearnEntry {
   _id: string
-  _type: 'tasteMaker' | 'tasteBreaker'
-  name: string
+  _type: 'learnEntry'
+  title: string
   slug: {
     current: string
   }
-  title?: string
-  excerpt?: string
+  button?: string
   filters?: Array<{_id: string}>
-  picture?: {
+  featuredImage?: {
     asset: {
       _id: string
       url: string
@@ -27,8 +25,8 @@ interface Person {
   }
 }
 
-const TASTEMAKERS_PAGE_QUERY = defineQuery(`
-  *[_type == "tasteMakers" && _id == "tasteMakers"][0] {
+const LEARN_PAGE_QUERY = defineQuery(`
+  *[_type == "learn" && _id == "learn"][0] {
     title,
     text,
     filters[]-> {
@@ -37,28 +35,21 @@ const TASTEMAKERS_PAGE_QUERY = defineQuery(`
       slug,
       title
     },
-    tasteMakersAndTasteBreakers[]-> {
+    entries[]-> {
       _id,
       _type,
-      name,
-      slug,
       title,
-      excerpt,
+      slug,
+      button,
       filters[]->{
         _id
       },
-      picture {
+      featuredImage {
         asset->{
           _id,
           url
         },
         alt
-      },
-      signature {
-        asset->{
-          _id,
-          url
-        }
       }
     }
   }
@@ -70,27 +61,27 @@ const TASTEMAKERS_PAGE_QUERY = defineQuery(`
  */
 export async function generateMetadata(props: Props, parent: ResolvingMetadata): Promise<Metadata> {
   const {data: pageData} = await sanityFetch({
-    query: TASTEMAKERS_PAGE_QUERY,
+    query: LEARN_PAGE_QUERY,
   })
 
   const previousImages = (await parent).openGraph?.images || []
 
   return {
-    title: pageData?.title || 'Taste Makers & Breakers',
-    description: pageData?.text || 'Discover our taste makers and taste breakers',
+    title: pageData?.title || 'Learn',
+    description: pageData?.text || 'Discover and learn',
     openGraph: {
       images: previousImages,
     },
   } satisfies Metadata
 }
 
-export default async function TasteMakersPage() {
+export default async function LearnPage() {
   const {data: pageData} = await sanityFetch({
-    query: TASTEMAKERS_PAGE_QUERY,
+    query: LEARN_PAGE_QUERY,
   })
 
-  const allPeople = pageData?.tasteMakersAndTasteBreakers || []
+  const allEntries = pageData?.entries || []
 
   // Keep the original order from Sanity (as chosen in the studio)
-  return <TastemakersClient pageData={pageData} sortedPeople={allPeople} />
+  return <LearnClient pageData={pageData} sortedEntries={allEntries} />
 }

@@ -1,0 +1,67 @@
+.introFilters {
+  padding: 130px 10px 90px;
+}
+
+.intro {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  grid-column: span 6;
+}
+
+.profileGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.learnCard {
+  position: relative;
+}
+
+.entryImageWrapper {
+  line-height: 0;
+}
+
+.entryImage {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.entryInfo {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1;
+  display: flex;
+  align-items: end;
+  padding: 10px;
+}
+
+.entryTitle {
+  flex: 1;
+  color: #fff;
+  white-space: pre-line;
+}
+
+.entryButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: end;
+}
+
+.entryButtons p {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-radius: 22px;
+  padding: 9px;
+}
+
+.emptyText {
+  text-align: center;
+  grid-column: span 2;
+}

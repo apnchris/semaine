@@ -23,6 +23,7 @@ const DISABLED_TYPES = [
   'interest',
   'location',
   'category',
+  'learn'
 ]
 
 export const structure: StructureResolver = (S: StructureBuilder) =>
@@ -73,6 +74,11 @@ export const structure: StructureResolver = (S: StructureBuilder) =>
       S.listItem()
         .title('TasteMakers and TasteBreakers')
         .child(S.document().schemaType('tasteMakers').documentId('tasteMakers'))
+        .icon(FolderIcon),
+
+      S.listItem()
+        .title('Learn')
+        .child(S.document().schemaType('learn').documentId('learn'))
         .icon(FolderIcon),
 
       S.divider(),

@@ -17,6 +17,13 @@
   row-gap: 20px;
 }
 
+.listView {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+}
+
 .profileCard {
   display: flex;
   flex-direction: column;
@@ -34,6 +41,10 @@
   padding: 10px;
 }
 
+.profileSignature {
+  height: auto;
+}
+
 .tastemakerCard .profileImageWrapper {
   background-color: #6881F5;
 }
@@ -47,4 +58,35 @@
   align-items: baseline;
   gap: 3px;
   padding: 0 15px;
+}
+
+.emptyText {
+  text-align: center;
+  grid-column: span 3;
+}
+
+.active {
+  color: #fff;
+  background-color: #000000CC;
+}
+
+.hoverPreview {
+  position: fixed;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: calc( ((100vw - 130px) / 12) * 3 + 20px );
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hoverImageWrapper {
+  position: relative;
+}
+
+.hoverImage {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
 }

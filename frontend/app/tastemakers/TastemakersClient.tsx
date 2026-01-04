@@ -1,9 +1,12 @@
 'use client'
 
+import {useState} from 'react'
 import Link from 'next/link'
 import SanityImage from '@/app/components/SanityImage'
 import FilterableContent from '@/app/components/FilterableList'
 import styles from '../css/pages/tastemakers.module.css'
+import GridIcon from '@/app/components/GridIcon'
+import ListIcon from '@/app/components/ListIcon'
 
 interface Person {
   _id: string
@@ -13,6 +16,7 @@ interface Person {
     current: string
   }
   title?: string
+  excerpt?: string
   filters?: Array<{_id: string}>
   picture?: {
     asset: {
@@ -20,6 +24,12 @@ interface Person {
       url: string
     }
     alt?: string
+  }
+  signature?: {
+    asset: {
+      _id: string
+      url: string
+    }
   }
 }
 
@@ -32,6 +42,9 @@ export default function TastemakersClient({
   pageData,
   sortedPeople,
 }: TastemakersClientProps) {
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+  const [hoveredPerson, setHoveredPerson] = useState<Person | null>(null)
+
   // Build filter configuration in the client component
   const filterConfig = [
     {
@@ -122,7 +135,7 @@ export default function TastemakersClient({
             </div>
           </div>
 
-          <div className={styles.profileGrid}>
+          <div className={`${styles.profileGrid} ${viewMode === 'list' ? styles.listView : ''}`}>
             {filteredItems.length > 0 ? (
               filteredItems.map((person: Person) => {
                 const basePath = person._type === 'tasteMaker' ? 'tastemakers' : 'tastebreakers'
@@ -135,7 +148,7 @@ export default function TastemakersClient({
                     href={`/${basePath}/${person.slug.current}`}
                     className={`${styles.profileCard} ${cardClass || ''}`}
                   >
-                    {person.picture?.asset && (
+                    {person.picture?.asset && viewMode === 'grid' && (
                       <div className={styles.profileImageWrapper}>
                         <SanityImage
                           id={person.picture.asset._id}
@@ -148,17 +161,74 @@ export default function TastemakersClient({
                       </div>
                     )}
 
-                    <div className={styles.profileInfo}>
-                      <h3 className="font-m">{person.name}</h3>
-                      {person.title && <p className="font-s">{person.title}</p>}
-                    </div>
+                    {person.signature?.asset && viewMode === 'list' && (
+                      <div 
+                        className={styles.profileSignatureWrapper}
+                        onMouseEnter={() => setHoveredPerson(person)}
+                        onMouseLeave={() => setHoveredPerson(null)}
+                      >
+                        <SanityImage
+                          id={person.signature.asset._id}
+                          alt={person.name}
+                          className={styles.profileSignature}
+                          width={475}
+                          mode="contain"
+                        />
+                      </div>
+                    )}
+
+                    {viewMode === 'grid' && (
+                      <div className={styles.profileInfo}>
+                        <h3 className="font-m">{person.name}</h3>
+                        {person.title && <p className="font-s">{person.title}</p>}
+                      </div>
+                    )}
                   </Link>
                 )
               })
             ) : (
-              <p>No taste makers or breakers found.</p>
+              <p className={`${styles.emptyText}`}>No content found :(</p>
             )}
           </div>
+
+          <div className={`viewToggle blur-back`}>
+            <button
+              className={`viewToggleButton ${viewMode === 'grid' ? styles.active : ''}`}
+              onClick={() => setViewMode('grid')}
+              aria-label="Grid view"
+            >
+              <GridIcon />
+            </button>
+            <button
+              className={`viewToggleButton ${viewMode === 'list' ? styles.active : ''}`}
+              onClick={() => setViewMode('list')}
+              aria-label="List view"
+            >
+              <ListIcon />
+            </button>
+          </div>
+
+          {hoveredPerson && viewMode === 'list' && (
+            <div className={styles.hoverPreview}>
+              {hoveredPerson.picture?.asset && (
+                <div className={styles.hoverImageWrapper}>
+                  <SanityImage
+                    id={hoveredPerson.picture.asset._id}
+                    alt={hoveredPerson.picture.alt || hoveredPerson.name}
+                    className={styles.hoverImage}
+                    width={600}
+                    height={800}
+                    mode="cover"
+                  />
+                  {hoveredPerson.excerpt && (
+                    <div className={styles.hoverExcerpt}>
+                      <p className="font-sm">{hoveredPerson.excerpt}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
     </FilterableContent>

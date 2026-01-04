@@ -138,6 +138,10 @@ input:-webkit-autofill:active {
   letter-spacing: -.06em;
 }
 
+.favorite-button {
+  width: 33px;
+}
+
 @media only screen and (min-width: 820px) {
   .hide-desktop {
     display: none!important;
