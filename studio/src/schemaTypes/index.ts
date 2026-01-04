@@ -23,6 +23,9 @@ import {inventoryType} from './objects/shopify/inventoryType'
 import {linkEmailType} from './objects/link/linkEmailType'
 import {linkExternalType} from './objects/link/linkExternalType'
 import {linkInternalType} from './objects/link/linkInternalType'
+import {linkCreditsType} from './objects/link/linkCredits'
+import {linkTitle} from './objects/link/linkTitle'
+import {linkGroup} from './objects/link/linkGroup'
 import {linkProductType} from './objects/link/linkProductType'
 import {menuLinksType} from './objects/global/menuLinksType'
 import {menuType} from './objects/global/menuType'
@@ -43,7 +46,7 @@ import {shopType} from './objects/shopify/shopType'
 import {spotType} from './objects/hotspot/spotType'
 
 // Objects used as annotations must be imported first
-const annotations = [linkEmailType, linkExternalType, linkInternalType, linkProductType]
+const annotations = [linkEmailType, linkExternalType, linkInternalType, linkProductType, linkTitle, linkGroup, linkCreditsType]
 
 const objects = [
   accordionGroupType,

@@ -1,4 +1,9 @@
 :root {
+  --font-xs: 11px;
+  --font-s: 13px;
+  --font-sm: 15px;
+  --font-m: 21px;
+  --font-l: 37px;
   --gap: 16px;
   --column: calc((100vw - (var(--gap) * 13)) / 12);
 }

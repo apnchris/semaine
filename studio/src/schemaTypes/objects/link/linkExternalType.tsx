@@ -22,10 +22,15 @@ export const linkExternalType = defineField({
   },
   fields: [
     defineField({
+      name: 'text',
+      title: 'Text',
+      type: 'string',
+    }),
+    defineField({
       name: 'url',
       title: 'URL',
       type: 'url',
-      validation: (Rule) => Rule.required().uri({scheme: ['http', 'https']}),
+      validation: (Rule) => Rule.required().uri({scheme: ['http', 'https', '/', 'mailto']}),
     }),
     defineField({
       title: 'Open in a new window?',

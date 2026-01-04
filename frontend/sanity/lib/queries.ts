@@ -1,6 +1,26 @@
 import {defineQuery} from 'next-sanity'
 
-export const settingsQuery = defineQuery(`*[_type == "settings"][0]`)
+export const settingsQuery = defineQuery(`
+  *[_type == "settings"][0]{
+    ...,
+    footer{
+      links[]{
+        title,
+        links[]{
+          _type,
+          text,
+          url,
+          newWindow,
+          _type == 'linkCredits' => {
+            title,
+            credits
+          }
+        }
+      },
+      newsletterText
+    }
+  }
+`)
 
 const postFields = /* groq */ `
   _id,
@@ -120,6 +140,33 @@ export const TASTEBREAKER_QUERY = defineQuery(`
     picture {
       asset->,
       alt
+    }
+  }
+`)
+
+export const allProductsQuery = defineQuery(`
+  *[_type == "product" && !store.isDeleted] | order(store.title asc) {
+    _id,
+    _type,
+    colorTheme->{
+      title,
+      text,
+      background
+    },
+    store {
+      id,
+      title,
+      slug,
+      status,
+      previewImageUrl,
+      priceRange,
+      productType,
+      vendor,
+      tags
+    },
+    seo {
+      title,
+      description
     }
   }
 `)

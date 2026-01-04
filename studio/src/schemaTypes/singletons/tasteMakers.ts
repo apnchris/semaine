@@ -18,6 +18,19 @@ export const tasteMakers = defineType({
       type: 'text'
     }),
     defineField({
+      title: 'Filters',
+      name: 'filters',
+      type: 'array',
+      of: [
+        {
+          type: 'reference',
+          to: [
+            {type: 'category'}
+          ]
+        }
+      ]
+    }),
+    defineField({
       title: 'TasteMakers and TasteBreakers',
       name: 'tasteMakersAndTasteBreakers',
       type: 'array',

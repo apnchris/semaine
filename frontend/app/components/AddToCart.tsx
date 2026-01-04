@@ -24,7 +24,7 @@ interface AddToCartProps {
 }
 
 export default function AddToCart({variants, productTitle}: AddToCartProps) {
-  const {addItem, isLoading} = useCart()
+  const {addItem, isLoading, openCart} = useCart()
   const [selectedVariant, setSelectedVariant] = useState(variants[0]?.store.gid || '')
   const [quantity, setQuantity] = useState(1)
   const [message, setMessage] = useState('')
@@ -40,9 +40,7 @@ export default function AddToCart({variants, productTitle}: AddToCartProps) {
       setMessage('Added to cart!')
       
       // Open the cart sidebar
-      if (typeof window !== 'undefined' && (window as any).openCart) {
-        (window as any).openCart()
-      }
+      openCart()
       
       setTimeout(() => setMessage(''), 3000)
     } catch (error) {

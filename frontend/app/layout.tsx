@@ -1,6 +1,8 @@
 import './css/commons/variables.css'
 import './css/commons/globals.css'
 import './css/commons/main.css'
+import './css/commons/nav.css'
+import './css/commons/filters.css'
 
 import {SpeedInsights} from '@vercel/speed-insights/next'
 import type {Metadata} from 'next'
@@ -15,6 +17,8 @@ import Footer from '@/app/components/Footer'
 import Header from '@/app/components/Header'
 import Link from 'next/link'
 import Logo from '@/app/components/Logo'
+import CartOverlay from '@/app/components/CartOverlay'
+import ScrollBottomDetector from '@/app/components/ScrollBottomDetector'
 import {CartProvider} from '@/app/context/CartContext'
 import * as demo from '@/sanity/lib/demo'
 import {sanityFetch, SanityLive} from '@/sanity/lib/live'
@@ -46,6 +50,15 @@ const baikal = localFont({
       style: 'italic',
     },
   ]
+})
+const marlfield = localFont({
+  src: [
+    {
+      path: '../public/fonts/TRIAL_OTT_Marlfield-Bold.woff2',
+      style: 'normal',
+    },
+  ],
+  variable: '--font-marlfield',
 })
 
 /**
@@ -87,8 +100,9 @@ export default async function RootLayout({children}: {children: React.ReactNode}
   const {isEnabled: isDraftMode} = await draftMode()
 
   return (
-    <html lang="en" className={baikal.className}>
+    <html lang="en" className={`${baikal.className} ${marlfield.variable}`}>
       <body>
+        <ScrollBottomDetector />
         <CartProvider>
           <section>
             {/* The <Toaster> component is responsible for rendering toast notifications used in /app/client-utils.ts and /app/components/DraftModeToast.tsx */}
@@ -109,6 +123,7 @@ export default async function RootLayout({children}: {children: React.ReactNode}
             <Header />
             <main className="">{children}</main>
             <Footer />
+            <CartOverlay />
           </section>
           <SpeedInsights />
         </CartProvider>

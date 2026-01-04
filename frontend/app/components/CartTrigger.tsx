@@ -2,11 +2,9 @@
 
 import {useState, useEffect} from 'react'
 import {useCart} from '@/app/context/CartContext'
-import Cart from './Cart'
 
 export default function CartTrigger() {
-  const {cart} = useCart()
-  const [isOpen, setIsOpen] = useState(false)
+  const {cart, toggleCart} = useCart()
   const [itemCount, setItemCount] = useState(0)
 
   useEffect(() => {
@@ -18,91 +16,13 @@ export default function CartTrigger() {
     }
   }, [cart])
 
-  const toggleCart = () => {
-    setIsOpen(!isOpen)
-  }
-
-  const closeCart = () => {
-    setIsOpen(false)
-  }
-
-  // Expose openCart function globally so AddToCart can use it
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      (window as any).openCart = () => setIsOpen(true)
-    }
-  }, [])
-
   return (
-    <>
-      {/* Cart Button */}
-      <button
-        onClick={toggleCart}
-      >
-        Cart
-        {itemCount > 0 && (
-          <span
-          >
-            ({itemCount})
-          </span>
-        )}
-      </button>
-
-      {/* Cart Sidebar Overlay */}
-      {isOpen && (
-        <>
-          {/* Backdrop */}
-          <div
-            onClick={closeCart}
-            style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: 'rgba(0, 0, 0, 0.5)',
-              zIndex: 999,
-            }}
-          />
-
-          {/* Sidebar */}
-          <div
-            style={{
-              position: 'fixed',
-              top: 0,
-              right: 0,
-              bottom: 0,
-              width: '100%',
-              maxWidth: '500px',
-              backgroundColor: '#fff',
-              zIndex: 1000,
-              overflowY: 'auto',
-              boxShadow: '-2px 0 8px rgba(0, 0, 0, 0.15)',
-              padding: '20px',
-            }}
-          >
-            {/* Close Button */}
-            <button
-              onClick={closeCart}
-              style={{
-                position: 'absolute',
-                top: '20px',
-                right: '20px',
-                backgroundColor: 'transparent',
-                border: 'none',
-                fontSize: '24px',
-                cursor: 'pointer',
-                padding: '0',
-                lineHeight: '1',
-              }}
-            >
-              ✕
-            </button>
-
-            <Cart />
-          </div>
-        </>
-      )}
-    </>
+    <button className='nav-link cart-trigger' onClick={toggleCart}>
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <path d="M15.3 18L18 5.4H12.7125L9 0L5.2875 5.4H0L2.7 18H15.3ZM12.2391 6.3H16.8867L14.5723 17.1H3.42765L1.1133 6.3H5.7609H12.2391ZM9 1.5885L11.6203 5.4H6.37965L9 1.5885Z" fill="black"/>
+      </svg>
+      
+      <span>{itemCount}</span>
+    </button>
   )
 }

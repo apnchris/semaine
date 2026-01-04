@@ -1,16 +1,15 @@
-import {LinkIcon} from '@sanity/icons'
+import {EarthGlobeIcon} from '@sanity/icons'
 import {defineField} from 'sanity'
-import {PAGE_REFERENCES} from '../../../constants'
 
-export const linkInternalType = defineField({
-  title: 'Internal Link',
-  name: 'linkInternal',
+export const linkCreditsType = defineField({
+  title: 'Credits',
+  name: 'linkCredits',
   type: 'object',
-  icon: LinkIcon,
+  icon: EarthGlobeIcon,
   components: {
     annotation: (props) => (
       <span>
-        <LinkIcon
+        <EarthGlobeIcon
           style={{
             marginLeft: '0.05em',
             marginRight: '0.1em',
@@ -23,14 +22,14 @@ export const linkInternalType = defineField({
   },
   fields: [
     defineField({
-      name: 'text',
-      title: 'Text',
+      name: 'title',
+      title: 'Title',
       type: 'string',
     }),
     defineField({
-      name: 'url',
-      title: 'URL',
-      type: 'string',
+      name: 'credits',
+      title: 'Credits',
+      type: 'portableTextSimple',
     }),
   ],
 })

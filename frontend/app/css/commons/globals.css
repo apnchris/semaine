@@ -96,10 +96,46 @@ input:-webkit-autofill:active {
   text-transform: uppercase;
 }
 
+.serif {
+  font-family: var(--font-marlfield);
+  letter-spacing: 0;
+}
+
+.blur-back {
+  backdrop-filter: blur(15px);
+  background-color: #EBEBEBCC;
+}
+
 .main-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   gap: 10px;
+}
+
+.font-xs {
+  font-size: var(--font-xs);
+  line-height: 1.2;
+}
+
+.font-s {
+  font-size: var(--font-s);
+  line-height: 1.2;
+}
+
+.font-sm {
+  font-size: var(--font-sm);
+  line-height: 1.1;
+}
+
+.font-m {
+  font-size: var(--font-m);
+  line-height: 1;
+}
+
+.font-l {
+  font-size: var(--font-l);
+  line-height: .9;
+  letter-spacing: -.06em;
 }
 
 @media only screen and (min-width: 820px) {

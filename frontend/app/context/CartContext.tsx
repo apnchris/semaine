@@ -45,6 +45,10 @@ interface Cart {
 interface CartContextType {
   cart: Cart | null
   isLoading: boolean
+  isCartOpen: boolean
+  openCart: () => void
+  closeCart: () => void
+  toggleCart: () => void
   addItem: (variantId: string, quantity: number) => Promise<void>
   updateItem: (lineId: string, quantity: number) => Promise<void>
   removeItem: (lineId: string) => Promise<void>
@@ -56,6 +60,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined)
 export function CartProvider({children}: {children: ReactNode}) {
   const [cart, setCart] = useState<Cart | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [isCartOpen, setIsCartOpen] = useState(false)
 
   // Load cart from localStorage on mount
   useEffect(() => {
@@ -140,11 +145,19 @@ export function CartProvider({children}: {children: ReactNode}) {
     return cart?.checkoutUrl || null
   }
 
+  const openCart = () => setIsCartOpen(true)
+  const closeCart = () => setIsCartOpen(false)
+  const toggleCart = () => setIsCartOpen(!isCartOpen)
+
   return (
     <CartContext.Provider
       value={{
         cart,
         isLoading,
+        isCartOpen,
+        openCart,
+        closeCart,
+        toggleCart,
         addItem,
         updateItem,
         removeItem,

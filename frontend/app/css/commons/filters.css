@@ -1,0 +1,45 @@
+.filters-container {
+  display: flex;
+  gap: 25px;
+  grid-column: span 3;
+}
+
+.filter-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.filter-item {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  cursor: pointer;
+  width: fit-content;
+}
+
+.filter-marker {
+  font-size: 16px;
+  width: 23px;
+  display: flex;
+  justify-content: space-between;
+  line-height: 1.01;
+  position: relative;
+}
+
+.filter-item:not(.active) {
+  color: #626365;
+}
+
+.filter-item.active .filter-marker::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #EBEBEBCC;
+  border: 1px solid #000;
+  position: absolute;
+  top: 55%;
+  left: 54%;
+  transform: translate(-50%, -50%);
+}

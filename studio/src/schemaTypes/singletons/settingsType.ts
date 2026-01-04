@@ -36,11 +36,6 @@ export const settingsType = defineType({
   ],
   fields: [
     defineField({
-      name: 'menu',
-      type: 'menu',
-      group: 'navigation',
-    }),
-    defineField({
       name: 'footer',
       type: 'footerSettings',
       group: 'navigation',

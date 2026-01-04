@@ -12,11 +12,13 @@ export const footerType = defineField({
     defineField({
       name: 'links',
       type: 'array',
-      of: [{type: 'linkInternal'}, {type: 'linkExternal'}],
+      of: [{type: 'linkGroup'}],
     }),
     defineField({
-      name: 'text',
-      type: 'portableTextSimple',
+      name: 'newsletterText',
+      type: 'text',
+      title: 'Newsletter Text',
+      rows: 3,
     }),
   ],
 })

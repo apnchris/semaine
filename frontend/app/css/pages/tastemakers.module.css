@@ -2,10 +2,6 @@
   padding: 130px 10px 90px;
 }
 
-.filters {
-  grid-column: span 3;
-}
-
 .intro {
   text-align: center;
   display: flex;
