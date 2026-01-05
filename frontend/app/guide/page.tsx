@@ -39,6 +39,7 @@ const GUIDE_PAGE_QUERY = defineQuery(`
             },
             _type == "guide" => {
               address,
+              message,
               location[]->{
                 _id,
                 city,

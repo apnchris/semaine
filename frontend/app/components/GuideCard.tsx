@@ -33,6 +33,18 @@ interface GuideCardProps {
 export default function GuideCard({guide}: GuideCardProps) {
   return (
     <div className={styles.guideCard}>
+      <div className={`${styles.cornersContainer}`}>
+        <div className={`${styles.cornersRow} ${styles.cornersTop}`}>
+          <div className={`${styles.cardCorner} ${styles.cornerLeft}`}></div>
+          <div className={`${styles.cardCorner} ${styles.cornerRight}`}></div>
+        </div>
+
+        <div className={`${styles.cornersRow} ${styles.cornersBottom}`}>
+          <div className={`${styles.cardCorner} ${styles.cornerLeft}`}></div>
+          <div className={`${styles.cardCorner} ${styles.cornerRight}`}></div>
+        </div>
+      </div>
+
       <Link href={`/guide/${guide.slug.current}`} className={styles.guideLink}>
         {guide.featuredImage?.asset && (
           <div className={styles.guideImageWrapper}>
@@ -41,7 +53,7 @@ export default function GuideCard({guide}: GuideCardProps) {
               alt={guide.featuredImage.alt || guide.title}
               className={styles.guideImage}
               width={350}
-              height={445}
+              height={450}
               mode="cover"
             />
           </div>

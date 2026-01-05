@@ -74,3 +74,19 @@ export const HeartIcon = () => {
     </svg>
   )
 }
+
+export const HeartIconFilled = () => {
+  return (
+    <svg width="13" height="11" viewBox="0 0 13 11" fill="none">
+      <path d="M6.25 10.9375L1.38875 6.25C0.545 5.61469 0 4.6075 0 3.47219C0 1.55563 1.55563 0 3.47219 0C4.6075 0 5.61812 0.54875 6.25 1.3925C6.88188 0.54875 7.8925 0 9.02781 0C10.9444 0 12.5 1.55563 12.5 3.47219C12.5 4.6075 11.955 5.61469 11.1112 6.25L6.25 10.9375Z" fill="black"/>
+    </svg>
+  )
+}
+
+export const ArrowIcon = () => {
+  return (
+    <svg width="9" height="17" viewBox="0 0 9 17" fill="none">
+      <path d="M8.00544 0L0 8.00544L8.00544 16.0109L8.68298 15.3333L1.35508 8.00544L8.68298 0.677542L8.00544 0Z" fill="black"/>
+    </svg>
+  )
+}
