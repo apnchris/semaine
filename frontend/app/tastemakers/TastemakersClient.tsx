@@ -5,8 +5,8 @@ import Link from 'next/link'
 import SanityImage from '@/app/components/SanityImage'
 import FilterableContent from '@/app/components/FilterableList'
 import styles from '../css/pages/tastemakers.module.css'
-import GridIcon from '@/app/components/GridIcon'
-import ListIcon from '@/app/components/ListIcon'
+import {GridIcon, ListIcon} from '@/app/components/Vectors'
+import FavoriteButton from '@/app/components/FavoriteButton'
 
 interface Person {
   _id: string
@@ -143,47 +143,53 @@ export default function TastemakersClient({
                   person._type === 'tasteMaker' ? styles.tastemakerCard : styles.tastebreakerCard
 
                 return (
-                  <Link
-                    key={person._id}
-                    href={`/${basePath}/${person.slug.current}`}
-                    className={`${styles.profileCard} ${cardClass || ''}`}
-                  >
-                    {person.picture?.asset && viewMode === 'grid' && (
-                      <div className={styles.profileImageWrapper}>
-                        <SanityImage
-                          id={person.picture.asset._id}
-                          alt={person.picture.alt || person.name}
-                          className={styles.profileImage}
-                          width={475}
-                          height={600}
-                          mode="cover"
-                        />
-                      </div>
-                    )}
-
-                    {person.signature?.asset && viewMode === 'list' && (
-                      <div 
-                        className={styles.profileSignatureWrapper}
-                        onMouseEnter={() => setHoveredPerson(person)}
-                        onMouseLeave={() => setHoveredPerson(null)}
-                      >
-                        <SanityImage
-                          id={person.signature.asset._id}
-                          alt={person.name}
-                          className={styles.profileSignature}
-                          width={475}
-                          mode="contain"
-                        />
-                      </div>
-                    )}
-
+                  <div className={`${styles.profileCard} ${cardClass || ''}`}>
                     {viewMode === 'grid' && (
-                      <div className={styles.profileInfo}>
-                        <h3 className="font-m">{person.name}</h3>
-                        {person.title && <p className="font-s">{person.title}</p>}
-                      </div>
+                      <FavoriteButton className={styles.favoriteButton} />
                     )}
-                  </Link>
+                    
+                    <Link
+                      key={person._id}
+                      href={`/${basePath}/${person.slug.current}`}
+                      className={`${styles.profileCardLink}`}
+                    >
+                      {person.picture?.asset && viewMode === 'grid' && (
+                        <div className={styles.profileImageWrapper}>
+                          <SanityImage
+                            id={person.picture.asset._id}
+                            alt={person.picture.alt || person.name}
+                            className={styles.profileImage}
+                            width={475}
+                            height={600}
+                            mode="cover"
+                          />
+                        </div>
+                      )}
+
+                      {person.signature?.asset && viewMode === 'list' && (
+                        <div 
+                          className={styles.profileSignatureWrapper}
+                          onMouseEnter={() => setHoveredPerson(person)}
+                          onMouseLeave={() => setHoveredPerson(null)}
+                        >
+                          <SanityImage
+                            id={person.signature.asset._id}
+                            alt={person.name}
+                            className={styles.profileSignature}
+                            width={475}
+                            mode="contain"
+                          />
+                        </div>
+                      )}
+
+                      {viewMode === 'grid' && (
+                        <div className={styles.profileInfo}>
+                          <h3 className="font-m">{person.name}</h3>
+                          {person.title && <p className="font-s">{person.title}</p>}
+                        </div>
+                      )}
+                    </Link>
+                  </div>
                 )
               })
             ) : (

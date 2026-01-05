@@ -108,6 +108,7 @@ import {interest} from './documents/interest'
 import {location} from './documents/location'
 import {category} from './documents/category'
 import {learnEntry} from './documents/learnEntry'
+import {event} from './documents/event'
 
 const documents = [
   collectionType,
@@ -120,7 +121,8 @@ const documents = [
   interest,
   location,
   category,
-  learnEntry
+  learnEntry,
+  event
 ]
 
 import {homeType} from './singletons/homeType'

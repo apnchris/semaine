@@ -1,0 +1,118 @@
+.introSection {
+  padding: 130px 10px 50px;
+}
+
+.intro {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  grid-column: 4 / span 6;
+}
+
+.monthSection {
+  padding: 40px 10px 20px;
+}
+
+.monthTitle {
+  text-align: center;
+  margin-bottom: 30px;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+.eventsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+}
+
+.eventExcerpt {
+  margin-top: 25px;
+  text-align: left;
+  width: calc( ((100vw - 130px) / 12) * 6 + 50px );
+}
+
+.eventsGrid.listView {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 10px;
+  text-align: center;
+  gap: 30px;
+}
+
+.eventCard {
+  position: relative;
+  transition: color 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+}
+
+.eventsGrid.listView .eventCard.notHovered {
+  color: #C4C4C4;
+}
+
+.eventImageWrapper {
+  line-height: 0;
+  width: calc( ((100vw - 130px) / 12) * 8 + 70px );
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+}
+
+.eventButtons {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  z-index: 1;
+  margin: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.eventImage {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.eventTitle {
+  white-space: pre-line;
+}
+
+.eventButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: end;
+}
+
+.eventButtons p {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-radius: 22px;
+  padding: 9px 20px;
+}
+
+.eventInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.emptyText {
+  text-align: center;
+  padding: 40px 0;
+}
+
+.active {
+  color: #fff;
+  background-color: #000000CC;
+}

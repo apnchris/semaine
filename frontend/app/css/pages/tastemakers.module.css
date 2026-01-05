@@ -25,6 +25,17 @@
 }
 
 .profileCard {
+  position: relative;
+}
+
+.favoriteButton {
+  position: absolute;
+  top: 25px;
+  right: 25px;
+  z-index: 1;
+}
+
+.profileCardLink {
   display: flex;
   flex-direction: column;
   gap: 5px;

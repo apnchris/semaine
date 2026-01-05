@@ -1,5 +1,5 @@
 .introFilters {
-  padding: 130px 10px 90px;
+  padding: 130px 10px 70px;
 }
 
 .intro {
@@ -10,13 +10,34 @@
   grid-column: span 6;
 }
 
+.memberActions {
+  display: flex;
+  justify-content: center;
+  gap: 13px;
+  color: #C4C4C4;
+}
+
 .profileGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
 }
 
+.profileGrid.listView {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 10px;
+  text-align: center;
+  gap: 30px;
+}
+
 .learnCard {
   position: relative;
+  transition: opacity 0.3s ease, color 0.3s ease;
+}
+
+.learnCard.notHovered {
+  color: #C4C4C4;
 }
 
 .entryImageWrapper {
@@ -42,8 +63,11 @@
 
 .entryTitle {
   flex: 1;
-  color: #fff;
   white-space: pre-line;
+}
+
+.profileGrid:not(.listView) .entryTitle {
+  color: #fff;
 }
 
 .entryButtons {
@@ -64,4 +88,34 @@
 .emptyText {
   text-align: center;
   grid-column: span 2;
+}
+
+.entryTitleWrapper {
+  cursor: pointer;
+}
+
+.hoverPreview {
+  position: fixed;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: calc( ((100vw - 130px) / 12) * 3 + 20px );
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hoverImageWrapper {
+  position: relative;
+}
+
+.hoverImage {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.active {
+  color: #fff;
+  background-color: #000000CC;
 }

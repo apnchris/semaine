@@ -15,6 +15,7 @@ interface LearnEntry {
     current: string
   }
   button?: string
+  excerpt?: string
   filters?: Array<{_id: string}>
   featuredImage?: {
     asset: {
@@ -41,6 +42,7 @@ const LEARN_PAGE_QUERY = defineQuery(`
       title,
       slug,
       button,
+      excerpt,
       filters[]->{
         _id
       },
