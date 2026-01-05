@@ -1,0 +1,13 @@
+.guidePage {
+  padding: 130px 0 60px;
+}
+
+.intro {
+  text-align: center;
+  margin-bottom: 60px;
+  padding: 0 10px;
+}
+
+.intro h1 {
+  grid-column: span 12;
+}

@@ -1,0 +1,7 @@
+.gridGuide {
+  padding: 0 10px;
+}
+
+.gridGuide > * {
+  grid-column: span 3;
+}
