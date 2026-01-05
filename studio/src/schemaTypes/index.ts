@@ -13,6 +13,7 @@ import {customProductOptionSizeType} from './objects/customProductOption/customP
 import {footerType} from './objects/global/footerType'
 import {gridItemType} from './objects/module/gridItemType'
 import {gridType} from './objects/module/gridType'
+import {gridGuide} from './objects/module/gridGuide'
 import {heroType} from './objects/module/heroType'
 import {imageCallToActionType} from './objects/module/imageCallToActionType'
 import {imageFeaturesType} from './objects/module/imageFeaturesType'
@@ -44,6 +45,8 @@ import {shopifyProductType} from './objects/shopify/shopifyProductType'
 import {shopifyProductVariantType} from './objects/shopify/shopifyProductVariantType'
 import {shopType} from './objects/shopify/shopType'
 import {spotType} from './objects/hotspot/spotType'
+import {picksModule} from './objects/module/picks'
+
 
 // Objects used as annotations must be imported first
 const annotations = [linkEmailType, linkExternalType, linkInternalType, linkProductType, linkTitle, linkGroup, linkCreditsType]
@@ -64,6 +67,7 @@ const objects = [
   footerType,
   gridItemType,
   gridType,
+  gridGuide,
   heroType,
   imageCallToActionType,
   imageFeaturesType,
@@ -88,6 +92,7 @@ const objects = [
   shopifyProductVariantType,
   shopType,
   spotType,
+  picksModule
 ]
 
 import {portableTextType} from './portableText/portableTextType'
@@ -109,6 +114,7 @@ import {location} from './documents/location'
 import {category} from './documents/category'
 import {learnEntry} from './documents/learnEntry'
 import {event} from './documents/event'
+import {guide} from './documents/guide'
 
 const documents = [
   collectionType,
@@ -122,19 +128,22 @@ const documents = [
   location,
   category,
   learnEntry,
-  event
+  event,
+  guide
 ]
 
 import {homeType} from './singletons/homeType'
 import {settingsType} from './singletons/settingsType'
 import {tasteMakers} from './singletons/tasteMakers'
 import {learn} from './singletons/learn'
+import {guidePage} from './singletons/guidePage'
 
 const singletons = [
   homeType,
   settingsType,
   tasteMakers,
-  learn
+  learn,
+  guidePage
 ]
 
 export const schemaTypes = [...annotations, ...objects, ...singletons, ...blocks, ...documents]
