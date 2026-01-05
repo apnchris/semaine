@@ -1,11 +1,9 @@
 'use client'
 
 import {useState} from 'react'
-import Link from 'next/link'
-import SanityImage from '@/app/components/SanityImage'
 import styles from '../css/pages/events.module.css'
 import {GridIcon, ListIcon} from '@/app/components/Vectors'
-import FavoriteButton from '@/app/components/FavoriteButton'
+import EventCard from '@/app/components/EventCard'
 
 interface Event {
   _id: string
@@ -67,73 +65,17 @@ export default function EventsClient({events}: EventsClientProps) {
 
           <div className={`${styles.eventsGrid} ${viewMode === 'list' ? styles.listView : ''}`}>
             {monthEvents.map((event: Event) => {
-              const isNotHovered = hoveredEvent && hoveredEvent._id !== event._id
-              const eventDate = new Date(event.dateTime)
-              const day = eventDate.getDate()
-              const month = eventDate.toLocaleDateString('en-US', {
-                month: 'short',
-              })
-              const formattedTime = eventDate.toLocaleTimeString('en-US', {
-                hour: 'numeric',
-                hour12: false,
-              })
-              
-              const endDate = event.dateTimeEnd 
-                ? new Date(event.dateTimeEnd).toLocaleDateString('en-US', {
-                    day: 'numeric',
-                  })
-                : null
+              const isNotHovered = hoveredEvent ? hoveredEvent._id !== event._id : false
 
               return (
-                <div className={`${styles.eventCard} ${isNotHovered ? styles.notHovered : ''}`}>
-                  <Link
-                    key={event._id}
-                    href={`/events/${event.slug.current}`}
-                    className={`${styles.eventLink}`}
-                  >
-                    <div
-                      className={styles.eventTitleWrapper}
-                      onMouseEnter={() => setHoveredEvent(event)}
-                      onMouseLeave={() => setHoveredEvent(null)}
-                    >
-                      <div className={styles.eventInfo}>
-                        <h3 className={`${styles.eventTitle} font-l`}>{event.title}</h3>
-                        <span className="font-l">
-                          {day}{endDate && ` – ${endDate}`} {month}, {formattedTime}h
-                        </span>
-                        {viewMode === 'grid' && event.excerpt && (
-                          <p className={`${styles.eventExcerpt} font-m`}>{event.excerpt}</p>
-                        )}
-                      </div>
-                    </div>
-                  </Link>
-
-                  {event.featuredImage?.asset && viewMode === 'grid' && (
-                    <div className={styles.eventImageWrapper}>
-                      <Link
-                        key={event._id}
-                        href={`/events/${event.slug.current}`}
-                        className={`${styles.eventLink}`}
-                      >
-                        <SanityImage
-                          id={event.featuredImage.asset._id}
-                          alt={event.featuredImage.alt || event.title}
-                          className={styles.eventImage}
-                          width={945}
-                          height={590}
-                          mode="cover"
-                        />
-                      </Link>
-
-                      {viewMode === 'grid' && (
-                        <div className={styles.eventButtons}>
-                          <FavoriteButton />
-                          {event.button && <p className="blur-back font-s">{event.button}</p>}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
+                <EventCard
+                  key={event._id}
+                  event={event}
+                  viewMode={viewMode}
+                  isNotHovered={isNotHovered}
+                  onMouseEnter={() => setHoveredEvent(event)}
+                  onMouseLeave={() => setHoveredEvent(null)}
+                />
               )
             })}
           </div>
@@ -160,28 +102,6 @@ export default function EventsClient({events}: EventsClientProps) {
           <ListIcon />
         </button>
       </div>
-
-      {/* {hoveredEvent && viewMode === 'list' && (
-        <div className={styles.hoverPreview}>
-          {hoveredEvent.featuredImage?.asset && (
-            <div className={styles.hoverImageWrapper}>
-              <SanityImage
-                id={hoveredEvent.featuredImage.asset._id}
-                alt={hoveredEvent.featuredImage.alt || hoveredEvent.title}
-                className={styles.hoverImage}
-                width={600}
-                height={800}
-                mode="cover"
-              />
-              {hoveredEvent.excerpt && (
-                <div className={styles.hoverExcerpt}>
-                  <p className="font-sm">{hoveredEvent.excerpt}</p>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      )} */}
     </div>
   )
 }
