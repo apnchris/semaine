@@ -248,6 +248,7 @@ export async function POST(request: NextRequest) {
                   const variantId = variant.id.replace('gid://shopify/ProductVariant/', '')
                   return {
                     _type: 'reference',
+                    _key: variantId,
                     _ref: `shopifyProductVariant-${variantId}`,
                     _weak: true,
                   }
