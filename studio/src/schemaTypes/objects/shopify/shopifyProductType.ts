@@ -128,10 +128,6 @@ export const shopifyProductType = defineField({
               type: 'string',
             }),
             defineField({
-              name: 'height',
-              type: 'number',
-            }),
-            defineField({
               name: 'id',
               type: 'string',
             }),
@@ -151,6 +147,10 @@ export const shopifyProductType = defineField({
               name: 'width',
               type: 'number',
             }),
+            defineField({
+              name: 'height',
+              type: 'number',
+            }),
           ],
         }),
       ],
@@ -159,6 +159,26 @@ export const shopifyProductType = defineField({
       name: 'options',
       type: 'array',
       of: [{type: 'option'},
+      ],
+    }),
+    defineField({
+      name: 'metafields',
+      title: 'Metafields',
+      type: 'object',
+      description: 'Product metafields from Shopify',
+      fields: [
+        defineField({
+          name: 'details_01',
+          title: 'Details 01',
+          type: 'string',
+          description: 'data.details_01 metafield',
+        }),
+        defineField({
+          name: 'details_02',
+          title: 'Details 02',
+          type: 'string',
+          description: 'data.details_02 metafield',
+        }),
       ],
     }),
     defineField({

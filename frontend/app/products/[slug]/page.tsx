@@ -2,6 +2,7 @@ import {notFound} from 'next/navigation'
 import {sanityFetch} from '@/sanity/lib/live'
 import {defineQuery} from 'next-sanity'
 import AddToCart from '@/app/components/AddToCart'
+import SanityImage from '@/app/components/SanityImage'
 
 type Props = {
   params: Promise<{slug: string}>
@@ -18,7 +19,9 @@ const PRODUCT_QUERY = defineQuery(`
       text,
       background
     },
-    body,
+    body[]{
+      ...,
+    },
     store {
       id,
       title,
@@ -26,6 +29,7 @@ const PRODUCT_QUERY = defineQuery(`
       status,
       isDeleted,
       previewImageUrl,
+      images,
       priceRange,
       descriptionHtml,
       options,
@@ -70,15 +74,20 @@ export default async function ProductPage({params}: Props) {
   
   return (
     <article className="product-page">
-      {/* Featured Image from Shopify */}
-      {sanityProduct.store.previewImageUrl && (
-        <div className="product-image">
-          <img
-            src={sanityProduct.store.previewImageUrl}
-            alt={sanityProduct.store.title}
-            width={800}
-            height={800}
-          />
+      
+      {/* Product Images from Shopify */}
+      {sanityProduct.store.images && sanityProduct.store.images.length > 0 && (
+        <div className="product-images">
+          {sanityProduct.store.images.map((image: any, index: number) => (
+            <div key={image.id || index} className="product-image">
+              <img
+                src={image.url || image.src}
+                alt={image.altText || sanityProduct.store.title}
+                width={image.width || 800}
+                height={image.height || 800}
+              />
+            </div>
+          ))}
         </div>
       )}
 

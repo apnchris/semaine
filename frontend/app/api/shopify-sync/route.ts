@@ -9,6 +9,60 @@ const sanityClient = createClient({
   useCdn: false,
 })
 
+// Fetch metafields from Shopify
+async function fetchProductMetafields(productGid: string) {
+  const query = `
+    query getProductMetafields($id: ID!) {
+      product(id: $id) {
+        metafields(keys: ["data.details_01", "data.details_02"], first: 10) {
+          edges {
+            node {
+              key
+              value
+            }
+          }
+        }
+      }
+    }
+  `
+
+  const response = await fetch(
+    `https://${process.env.SHOPIFY_STORE_DOMAIN}/admin/api/2024-01/graphql.json`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Shopify-Access-Token': process.env.SHOPIFY_ADMIN_API_TOKEN || '',
+      },
+      body: JSON.stringify({
+        query,
+        variables: {id: productGid},
+      }),
+    }
+  )
+
+  if (!response.ok) {
+    console.error(`Shopify API error: ${response.status} ${response.statusText}`)
+    return {}
+  }
+
+  const result = await response.json()
+  
+  if (result.errors) {
+    console.error('GraphQL errors:', result.errors)
+    return {}
+  }
+
+  const metafields: Record<string, string> = {}
+
+  result.data?.product?.metafields?.edges?.forEach(({node}: any) => {
+    metafields[node.key] = node.value
+  })
+
+  console.log(`Fetched metafields for ${productGid}:`, metafields)
+  return metafields
+}
+
 type ProductImage = {
   id: string
   altText?: string
@@ -43,6 +97,10 @@ type Product = {
   publishedAt: string
   createdAt: string
   updatedAt: string
+  metafields?: {
+    details_01?: string
+    details_02?: string
+  }
 }
 
 type WebhookPayload =
@@ -60,6 +118,9 @@ export async function POST(request: NextRequest) {
     const payload: WebhookPayload = await request.json()
 
     console.log('Received Shopify sync webhook:', payload.action)
+    if ('products' in payload && payload.products.length > 0) {
+      console.log('Sample product data:', JSON.stringify(payload.products[0], null, 2))
+    }
 
     // Handle product deletion
     if (payload.action === 'delete') {
@@ -79,23 +140,34 @@ export async function POST(request: NextRequest) {
 
     // Handle product create/update/sync
     if ('products' in payload) {
-      const mutations = payload.products.map((product) => {
-        const productId = product.id.replace('gid://shopify/Product/', '')
+      const mutations = await Promise.all(
+        payload.products.map(async (product) => {
+          const productId = product.id.replace('gid://shopify/Product/', '')
 
-        // Transform images to match your schema
-        const images = product.images.map((img) => ({
-          _type: 'object',
-          _key: img.id.replace('gid://shopify/ProductImage/', ''),
-          id: img.id,
-          altText: img.altText || '',
-          height: img.height,
-          width: img.width,
-          url: img.src,
-          src: img.src,
-          originalSrc: img.src,
-        }))
+          // Fetch metafields from Shopify
+          let metafields = product.metafields || {}
+          if (!product.metafields) {
+            try {
+              metafields = await fetchProductMetafields(product.id)
+            } catch (error) {
+              console.error(`Failed to fetch metafields for ${product.id}:`, error)
+            }
+          }
 
-        return {
+          // Transform images to match your schema
+          const images = product.images.map((img) => ({
+            _type: 'object',
+            _key: img.id.replace('gid://shopify/ProductImage/', ''),
+            id: img.id,
+            altText: img.altText || '',
+            height: img.height,
+            width: img.width,
+            url: img.src,
+            src: img.src,
+            originalSrc: img.src,
+          }))
+
+          return {
           createOrReplace: {
             _type: 'product',
             _id: `shopifyProduct-${productId}`,
@@ -115,6 +187,10 @@ export async function POST(request: NextRequest) {
               tags: product.tags.join(', '),
               previewImageUrl: product.featuredImage?.src || product.images[0]?.src,
               images: images, // ← THE IMAGES ARRAY!
+              metafields: {
+                details_01: metafields.details_01 || '',
+                details_02: metafields.details_02 || '',
+              },
               priceRange: {
                 minVariantPrice: product.priceRange.minVariantPrice,
                 maxVariantPrice: product.priceRange.maxVariantPrice,
@@ -131,7 +207,8 @@ export async function POST(request: NextRequest) {
             },
           },
         }
-      })
+        })
+      )
 
       const result = await sanityClient.transaction(mutations).commit()
       console.log(`Synced ${payload.products.length} products with images`)
