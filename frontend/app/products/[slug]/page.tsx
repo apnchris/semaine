@@ -30,6 +30,7 @@ const PRODUCT_QUERY = defineQuery(`
       isDeleted,
       previewImageUrl,
       images,
+      metafields,
       priceRange,
       descriptionHtml,
       options,
@@ -109,6 +110,24 @@ export default async function ProductPage({params}: Props) {
         />
       )}
 
+      {/* Shopify Metafields */}
+      {sanityProduct.store.metafields && (
+        <div className="product-metafields">
+          {sanityProduct.store.metafields.details_column_01 && (
+            <div className="metafield-details">
+              <h3>Details:</h3>
+              <pre style={{whiteSpace: 'pre-wrap'}}>{sanityProduct.store.metafields.details_column_01}</pre>
+            </div>
+          )}
+          {sanityProduct.store.metafields.details_column_02 && (
+            <div className="metafield-details">
+              <h3>Additional Info:</h3>
+              <pre style={{whiteSpace: 'pre-wrap'}}>{sanityProduct.store.metafields.details_column_02}</pre>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Price Range */}
       {sanityProduct.store.priceRange?.minVariantPrice && (
         <div className="product-price">
@@ -149,20 +168,6 @@ export default async function ProductPage({params}: Props) {
               <strong>{option.name}:</strong> {option.values.join(', ')}
             </div>
           ))}
-        </div>
-      )}
-
-      {/* Color Theme */}
-      {sanityProduct.colorTheme && (
-        <div className="product-color-theme">
-          <p><strong>Color Theme:</strong> {sanityProduct.colorTheme.title}</p>
-        </div>
-      )}
-
-      {/* SEO */}
-      {sanityProduct.seo && (
-        <div className="product-seo" style={{display: 'none'}}>
-          <p>SEO configured</p>
         </div>
       )}
     </article>
