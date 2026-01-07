@@ -142,7 +142,7 @@ export async function POST(request: NextRequest) {
 
     // Handle product create/update/sync
     if ('products' in payload) {
-      const mutations = await Promise.all(
+      const allMutations = await Promise.all(
         payload.products.map(async (product) => {
           const productId = product.id.replace('gid://shopify/Product/', '')
 
@@ -162,74 +162,113 @@ export async function POST(request: NextRequest) {
 
           // Transform images to match your schema
           const images = product.images.map((img) => ({
-          _type: 'object',
-          _key: img.id.replace('gid://shopify/ProductImage/', ''),
-          id: img.id,
-          altText: img.altText || '',
-          height: img.height,
-          width: img.width,
-          url: img.src,
-          src: img.src,
-          originalSrc: img.src,
-        }))
+            _type: 'object',
+            _key: img.id.replace('gid://shopify/ProductImage/', ''),
+            id: img.id,
+            altText: img.altText || '',
+            height: img.height,
+            width: img.width,
+            url: img.src,
+            src: img.src,
+            originalSrc: img.src,
+          }))
 
-        return {
-          createOrReplace: {
-            _type: 'product',
-            _id: `shopifyProduct-${productId}`,
-            store: {
-              _type: 'shopifyProduct',
-              id: parseInt(productId),
-              gid: product.id,
-              title: product.title,
-              slug: {
-                _type: 'slug',
-                current: product.handle,
-              },
-              descriptionHtml: product.descriptionHtml,
-              status: product.status,
-              productType: product.productType,
-              vendor: product.vendor,
-              tags: product.tags.join(', '),
-              previewImageUrl: product.featuredImage?.src || product.images[0]?.src,
-              images: images, // ← THE IMAGES ARRAY!
-              metafields: {
-                details_column_01: metafields.details_column_01 || '',
-                details_column_02: metafields.details_column_02 || '',
-              },
-              priceRange: {
-                minVariantPrice: product.priceRange.minVariantPrice,
-                maxVariantPrice: product.priceRange.maxVariantPrice,
-              },
-              options: product.options.map((opt) => ({
-                _type: 'option',
-                _key: opt.name,
-                name: opt.name,
-                values: opt.values,
-              })),
-              variants: product.variants.map((variant) => ({
+          // Create mutations for variants (as separate documents)
+          const variantMutations = product.variants.map((variant) => {
+            const variantId = variant.id.replace('gid://shopify/ProductVariant/', '')
+            return {
+              createOrReplace: {
                 _type: 'productVariant',
-                _key: variant.id?.replace('gid://shopify/ProductVariant/', '') || String(Math.random()),
-                id: variant.id,
-                title: variant.title,
-                sku: variant.sku,
-                price: variant.price,
-                compareAtPrice: variant.compareAtPrice,
-                availableForSale: variant.availableForSale,
-                inventoryQuantity: variant.inventoryQuantity,
-                selectedOptions: variant.selectedOptions,
-              })),
-              createdAt: product.createdAt,
-              updatedAt: product.updatedAt,
-              isDeleted: false,
+                _id: `shopifyProductVariant-${variantId}`,
+                store: {
+                  _type: 'shopifyProductVariant',
+                  id: parseInt(variantId),
+                  gid: variant.id,
+                  productId: parseInt(productId),
+                  productGid: product.id,
+                  title: variant.title,
+                  sku: variant.sku || '',
+                  price: parseFloat(variant.price) || 0,
+                  compareAtPrice: variant.compareAtPrice ? parseFloat(variant.compareAtPrice) : undefined,
+                  previewImageUrl: variant.image?.src || product.featuredImage?.src || product.images[0]?.src,
+                  option1: variant.selectedOptions?.[0]?.value,
+                  option2: variant.selectedOptions?.[1]?.value,
+                  option3: variant.selectedOptions?.[2]?.value,
+                  inventory: {
+                    _type: 'inventory',
+                    isAvailable: variant.availableForSale,
+                    management: 'SHOPIFY',
+                    policy: 'DENY',
+                  },
+                  status: product.status,
+                  createdAt: product.createdAt,
+                  updatedAt: product.updatedAt,
+                  isDeleted: false,
+                },
+              },
+            }
+          })
+
+          // Create mutation for product with variant references
+          const productMutation = {
+            createOrReplace: {
+              _type: 'product',
+              _id: `shopifyProduct-${productId}`,
+              store: {
+                _type: 'shopifyProduct',
+                id: parseInt(productId),
+                gid: product.id,
+                title: product.title,
+                slug: {
+                  _type: 'slug',
+                  current: product.handle,
+                },
+                descriptionHtml: product.descriptionHtml,
+                status: product.status,
+                productType: product.productType,
+                vendor: product.vendor,
+                tags: product.tags.join(', '),
+                previewImageUrl: product.featuredImage?.src || product.images[0]?.src,
+                images: images,
+                metafields: {
+                  details_column_01: metafields.details_column_01 || '',
+                  details_column_02: metafields.details_column_02 || '',
+                },
+                priceRange: {
+                  minVariantPrice: product.priceRange.minVariantPrice,
+                  maxVariantPrice: product.priceRange.maxVariantPrice,
+                },
+                options: product.options.map((opt) => ({
+                  _type: 'option',
+                  _key: opt.name,
+                  name: opt.name,
+                  values: opt.values,
+                })),
+                variants: product.variants.map((variant) => {
+                  const variantId = variant.id.replace('gid://shopify/ProductVariant/', '')
+                  return {
+                    _type: 'reference',
+                    _ref: `shopifyProductVariant-${variantId}`,
+                    _weak: true,
+                  }
+                }),
+                createdAt: product.createdAt,
+                updatedAt: product.updatedAt,
+                isDeleted: false,
+              },
             },
-          },
-        }
+          }
+
+          // Return all mutations for this product (variants + product)
+          return [...variantMutations, productMutation]
         })
       )
 
-      const result = await sanityClient.transaction(mutations).commit()
-      console.log(`Synced ${payload.products.length} products with images`)
+      // Flatten the array of mutation arrays
+      const mutations = allMutations.flat()
+
+      const result = await sanityClient.transaction(mutations as any).commit()
+      console.log(`Synced ${payload.products.length} products with variants and images`)
       return NextResponse.json({success: true, synced: payload.products.length})
     }
 
