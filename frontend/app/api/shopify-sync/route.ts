@@ -148,9 +148,13 @@ export async function POST(request: NextRequest) {
 
           // Fetch metafields from Shopify
           let metafields = product.metafields || {}
-          if (!product.metafields) {
+          console.log(`Product ${product.title} (${product.id}) webhook metafields:`, product.metafields)
+          
+          if (!product.metafields || Object.keys(product.metafields).length === 0) {
+            console.log(`Fetching metafields from Shopify API for ${product.id}...`)
             try {
               metafields = await fetchProductMetafields(product.id)
+              console.log(`Fetched metafields:`, metafields)
             } catch (error) {
               console.error(`Failed to fetch metafields for ${product.id}:`, error)
             }
