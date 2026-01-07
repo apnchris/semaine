@@ -159,7 +159,10 @@ export const allProductsQuery = defineQuery(`
       slug,
       status,
       previewImageUrl,
-      priceRange,
+      priceRange {
+        minVariantPrice,
+        maxVariantPrice
+      },
       productType,
       vendor,
       tags

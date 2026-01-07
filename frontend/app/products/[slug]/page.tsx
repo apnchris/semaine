@@ -118,41 +118,16 @@ export default async function ProductPage({params}: Props) {
         <div className="product-metafields">
           {sanityProduct.store.metafields.details_column_01 && (
             <div className="metafield-details">
-              <h3>Details:</h3>
               <pre style={{whiteSpace: 'pre-wrap'}}>{sanityProduct.store.metafields.details_column_01}</pre>
             </div>
           )}
           {sanityProduct.store.metafields.details_column_02 && (
             <div className="metafield-details">
-              <h3>Additional Info:</h3>
               <pre style={{whiteSpace: 'pre-wrap'}}>{sanityProduct.store.metafields.details_column_02}</pre>
             </div>
           )}
         </div>
       )}
-
-      {/* Price Range */}
-      {sanityProduct.store.priceRange?.minVariantPrice && (
-        <div className="product-price">
-          <span className="price">
-            {sanityProduct.store.priceRange.minVariantPrice.currencyCode ?? 'USD'}{' '}
-            {sanityProduct.store.priceRange.minVariantPrice.amount}
-          </span>
-        </div>
-      )}
-
-      {/* Product Details */}
-      <div className="product-details">
-        {sanityProduct.store.vendor && (
-          <p><strong>Vendor:</strong> {sanityProduct.store.vendor}</p>
-        )}
-        {sanityProduct.store.productType && (
-          <p><strong>Type:</strong> {sanityProduct.store.productType}</p>
-        )}
-        {sanityProduct.store.tags && sanityProduct.store.tags.length > 0 && (
-          <p><strong>Tags:</strong> {sanityProduct.store.tags.join(', ')}</p>
-        )}
-      </div>
 
       {/* Add to Cart */}
       {sanityProduct.store.variants && sanityProduct.store.variants.length > 0 && (
@@ -169,18 +144,6 @@ export default async function ProductPage({params}: Props) {
             }))}
           productTitle={sanityProduct.store.title}
         />
-      )}
-
-      {/* Options */}
-      {sanityProduct.store.options && sanityProduct.store.options.length > 0 && (
-        <div className="product-options">
-          <h3>Options:</h3>
-          {sanityProduct.store.options.map((option: any) => (
-            <div key={option.name}>
-              <strong>{option.name}:</strong> {option.values.join(', ')}
-            </div>
-          ))}
-        </div>
       )}
     </article>
   )

@@ -57,31 +57,30 @@ export default function AddToCart({variants, productTitle}: AddToCartProps) {
     <div className="add-to-cart">
       {variants.length > 1 && (
         <div className="variant-selector">
-          <label htmlFor="variant-select">
-            <strong>Select Variant:</strong>
-          </label>
-          <select
-            id="variant-select"
-            value={selectedVariant}
-            onChange={(e) => setSelectedVariant(e.target.value)}
-            style={{
-              padding: '8px',
-              marginTop: '8px',
-              width: '100%',
-              maxWidth: '300px',
-            }}
-          >
+          <div style={{marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '8px'}}>
             {variants.map((variant) => (
-              <option key={variant.id} value={variant.id}>
-                {variant.title} - ${variant.price}
-                {!variant.availableForSale && ' (Out of stock)'}
-              </option>
+              <label
+                key={variant.id}
+                className={selectedVariant === variant.id ? 'active' : ''}
+              >
+                <input
+                  type="radio"
+                  name="variant"
+                  value={variant.id}
+                  checked={selectedVariant === variant.id}
+                  onChange={(e) => setSelectedVariant(e.target.value)}
+                  disabled={!variant.availableForSale}
+                />
+                <span>
+                  {variant.title}
+                </span>
+              </label>
             ))}
-          </select>
+          </div>
         </div>
       )}
 
-      <div className="quantity-selector" style={{marginTop: '16px'}}>
+      <div className="quantity-selector" style={{display: 'none'}}>
         <label htmlFor="quantity">
           <strong>Quantity:</strong>
         </label>
@@ -101,26 +100,20 @@ export default function AddToCart({variants, productTitle}: AddToCartProps) {
         />
       </div>
 
-      <button
-        onClick={handleAddToCart}
-        disabled={isLoading || !selectedVariantData?.availableForSale}
-        style={{
-          marginTop: '16px',
-          padding: '12px 24px',
-          backgroundColor: selectedVariantData?.availableForSale ? '#000' : '#ccc',
-          color: '#fff',
-          border: 'none',
-          cursor: selectedVariantData?.availableForSale ? 'pointer' : 'not-allowed',
-          fontSize: '16px',
-          fontWeight: 'bold',
-        }}
-      >
-        {isLoading
-          ? 'Adding...'
-          : !selectedVariantData?.availableForSale
-            ? 'Out of Stock'
-            : 'Add to Cart'}
-      </button>
+      <div className='add-to-cart-container'>
+        <button
+          onClick={handleAddToCart}
+          disabled={isLoading || !selectedVariantData?.availableForSale}
+        >
+          {isLoading
+            ? 'Adding...'
+            : !selectedVariantData?.availableForSale
+              ? 'Out of Stock'
+              : 'Add to Cart'}
+        </button>
+
+        <span className='product-price'>${selectedVariantData?.price}</span>
+      </div>
 
       {message && (
         <p
