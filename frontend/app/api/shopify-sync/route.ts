@@ -14,7 +14,7 @@ async function fetchProductMetafields(productGid: string) {
   const query = `
     query getProductMetafields($id: ID!) {
       product(id: $id) {
-        metafields(keys: ["data.details_01", "data.details_02"], first: 10) {
+        metafields(keys: ["data.details_column_01", "data.details_column_02"], first: 10) {
           edges {
             node {
               key
@@ -56,7 +56,7 @@ async function fetchProductMetafields(productGid: string) {
   const metafields: Record<string, string> = {}
 
   result.data?.product?.metafields?.edges?.forEach(({node}: any) => {
-    // The key comes back as just "details_01" or "details_02" without the namespace
+    // The key comes back as just "details_column_01" or "details_column_02" without the namespace
     const key = node.key.replace('data.', '') // Remove namespace if present
     metafields[key] = node.value
   })
@@ -100,8 +100,8 @@ type Product = {
   createdAt: string
   updatedAt: string
   metafields?: {
-    details_01?: string
-    details_02?: string
+    details_column_01?: string
+    details_column_02?: string
   }
 }
 
@@ -194,8 +194,8 @@ export async function POST(request: NextRequest) {
               previewImageUrl: product.featuredImage?.src || product.images[0]?.src,
               images: images, // ← THE IMAGES ARRAY!
               metafields: {
-                details_01: metafields.details_01 || '',
-                details_02: metafields.details_02 || '',
+                details_column_01: metafields.details_column_01 || '',
+                details_column_02: metafields.details_column_02 || '',
               },
               priceRange: {
                 minVariantPrice: product.priceRange.minVariantPrice,
