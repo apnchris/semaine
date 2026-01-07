@@ -168,13 +168,13 @@ export const shopifyProductType = defineField({
       description: 'Product metafields from Shopify',
       fields: [
         defineField({
-          name: 'details_01',
+          name: 'details_03',
           title: 'Details 01',
           type: 'text',
           description: 'data.details_01 metafield',
         }),
         defineField({
-          name: 'details_02',
+          name: 'details_04',
           title: 'Details 02',
           type: 'text',
           description: 'data.details_02 metafield',

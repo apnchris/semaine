@@ -100,8 +100,8 @@ type Product = {
   createdAt: string
   updatedAt: string
   metafields?: {
-    details_01?: string
-    details_02?: string
+    details_03?: string
+    details_04?: string
   }
 }
 
@@ -194,8 +194,8 @@ export async function POST(request: NextRequest) {
               previewImageUrl: product.featuredImage?.src || product.images[0]?.src,
               images: images, // ← THE IMAGES ARRAY!
               metafields: {
-                details_01: metafields.details_01 || '',
-                details_02: metafields.details_02 || '',
+                details_03: metafields.details_03 || '',
+                details_04: metafields.details_04 || '',
               },
               priceRange: {
                 minVariantPrice: product.priceRange.minVariantPrice,
