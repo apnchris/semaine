@@ -56,7 +56,9 @@ async function fetchProductMetafields(productGid: string) {
   const metafields: Record<string, string> = {}
 
   result.data?.product?.metafields?.edges?.forEach(({node}: any) => {
-    metafields[node.key] = node.value
+    // The key comes back as just "details_01" or "details_02" without the namespace
+    const key = node.key.replace('data.', '') // Remove namespace if present
+    metafields[key] = node.value
   })
 
   console.log(`Fetched metafields for ${productGid}:`, metafields)
