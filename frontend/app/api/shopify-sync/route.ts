@@ -162,18 +162,18 @@ export async function POST(request: NextRequest) {
 
           // Transform images to match your schema
           const images = product.images.map((img) => ({
-            _type: 'object',
-            _key: img.id.replace('gid://shopify/ProductImage/', ''),
-            id: img.id,
-            altText: img.altText || '',
-            height: img.height,
-            width: img.width,
-            url: img.src,
-            src: img.src,
-            originalSrc: img.src,
-          }))
+          _type: 'object',
+          _key: img.id.replace('gid://shopify/ProductImage/', ''),
+          id: img.id,
+          altText: img.altText || '',
+          height: img.height,
+          width: img.width,
+          url: img.src,
+          src: img.src,
+          originalSrc: img.src,
+        }))
 
-          return {
+        return {
           createOrReplace: {
             _type: 'product',
             _id: `shopifyProduct-${productId}`,

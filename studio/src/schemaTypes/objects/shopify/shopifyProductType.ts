@@ -170,13 +170,13 @@ export const shopifyProductType = defineField({
         defineField({
           name: 'details_01',
           title: 'Details 01',
-          type: 'string',
+          type: 'text',
           description: 'data.details_01 metafield',
         }),
         defineField({
           name: 'details_02',
           title: 'Details 02',
-          type: 'string',
+          type: 'text',
           description: 'data.details_02 metafield',
         }),
       ],
