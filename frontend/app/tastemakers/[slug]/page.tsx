@@ -4,16 +4,30 @@ import {sanityFetch} from '@/sanity/lib/live'
 import {TASTEMAKER_QUERY} from '@/sanity/lib/queries'
 import SanityImage from '@/app/components/SanityImage'
 
+type TasteMakerProfile = {
+  _id: string
+  name: string
+  title: string
+  picture?: {
+    asset: {
+      _id: string
+    }
+    alt?: string
+  }
+}
+
 type Props = {
   params: Promise<{slug: string}>
 }
 
 export async function generateMetadata({params}: Props): Promise<Metadata> {
   const {slug} = await params
-  const {data: profile} = await sanityFetch({
+  const {data} = await sanityFetch({
     query: TASTEMAKER_QUERY,
     params: {slug},
   })
+  
+  const profile = data as TasteMakerProfile | null
 
   return {
     title: profile?.name ? `${profile.name} - ${profile.title}` : 'Tastemaker',
@@ -23,10 +37,12 @@ export async function generateMetadata({params}: Props): Promise<Metadata> {
 
 export default async function TasteMakerPage({params}: Props) {
   const {slug} = await params
-  const {data: profile} = await sanityFetch({
+  const {data} = await sanityFetch({
     query: TASTEMAKER_QUERY,
     params: {slug},
   })
+  
+  const profile = data as TasteMakerProfile | null
 
   if (!profile) {
     notFound()
