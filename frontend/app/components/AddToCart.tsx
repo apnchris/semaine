@@ -5,33 +5,37 @@ import {useCart} from '@/app/context/CartContext'
 
 interface AddToCartProps {
   variants: Array<{
-    _id: string
-    store: {
-      id: string
-      gid: string
-      title: string
-      price: number
-      compareAtPrice?: number
-      sku?: string
-      inventory: {
-        isAvailable: boolean
-        management?: string
-        policy?: string
-      }
-    }
+    id: string
+    title: string
+    price: number
+    compareAtPrice?: number
+    sku?: string
+    availableForSale: boolean
   }>
   productTitle: string
 }
 
 export default function AddToCart({variants, productTitle}: AddToCartProps) {
   const {addItem, isLoading, openCart} = useCart()
-  const [selectedVariant, setSelectedVariant] = useState(variants[0]?.store.gid || '')
+  const [selectedVariant, setSelectedVariant] = useState(variants[0]?.id || '')
   const [quantity, setQuantity] = useState(1)
   const [message, setMessage] = useState('')
+
+  const selectedVariantData = variants.find((v) => v.id === selectedVariant)
 
   const handleAddToCart = async () => {
     if (!selectedVariant) {
       setMessage('Please select a variant')
+      return
+    }
+    
+    if (!selectedVariantData?.availableForSale) {
+      setMessage('This variant is out of stock')
+      return
+    }
+
+    if (quantity < 1) {
+      setMessage('Please select a valid quantity')
       return
     }
 
@@ -48,8 +52,6 @@ export default function AddToCart({variants, productTitle}: AddToCartProps) {
       console.error(error)
     }
   }
-
-  const selectedVariantData = variants.find((v) => v.store.gid === selectedVariant)?.store
 
   return (
     <div className="add-to-cart">
@@ -70,9 +72,9 @@ export default function AddToCart({variants, productTitle}: AddToCartProps) {
             }}
           >
             {variants.map((variant) => (
-              <option key={variant.store.gid} value={variant.store.gid} disabled={!variant.store.inventory?.isAvailable}>
-                {variant.store.title} - ${variant.store.price}
-                {!variant.store.inventory?.isAvailable && ' (Out of stock)'}
+              <option key={variant.id} value={variant.id}>
+                {variant.title} - ${variant.price}
+                {!variant.availableForSale && ' (Out of stock)'}
               </option>
             ))}
           </select>
@@ -88,32 +90,34 @@ export default function AddToCart({variants, productTitle}: AddToCartProps) {
           type="number"
           min="1"
           value={quantity}
-          onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
+          onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+          disabled={!selectedVariantData?.availableForSale}
           style={{
             padding: '8px',
             marginLeft: '8px',
             width: '80px',
+            opacity: selectedVariantData?.availableForSale ? 1 : 0.5,
           }}
         />
       </div>
 
       <button
         onClick={handleAddToCart}
-        disabled={isLoading || !selectedVariantData?.inventory?.isAvailable}
+        disabled={isLoading || !selectedVariantData?.availableForSale}
         style={{
           marginTop: '16px',
           padding: '12px 24px',
-          backgroundColor: selectedVariantData?.inventory?.isAvailable ? '#000' : '#ccc',
+          backgroundColor: selectedVariantData?.availableForSale ? '#000' : '#ccc',
           color: '#fff',
           border: 'none',
-          cursor: selectedVariantData?.inventory?.isAvailable ? 'pointer' : 'not-allowed',
+          cursor: selectedVariantData?.availableForSale ? 'pointer' : 'not-allowed',
           fontSize: '16px',
           fontWeight: 'bold',
         }}
       >
         {isLoading
           ? 'Adding...'
-          : !selectedVariantData?.inventory?.isAvailable
+          : !selectedVariantData?.availableForSale
             ? 'Out of Stock'
             : 'Add to Cart'}
       </button>

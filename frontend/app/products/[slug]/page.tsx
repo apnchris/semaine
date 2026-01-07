@@ -73,6 +73,9 @@ export default async function ProductPage({params}: Props) {
   
   if (!sanityProduct || !sanityProduct.store) notFound()
   
+  // Debug logging
+  console.log('Variants data:', JSON.stringify(sanityProduct.store.variants, null, 2))
+  
   return (
     <article className="product-page">
       
@@ -154,7 +157,16 @@ export default async function ProductPage({params}: Props) {
       {/* Add to Cart */}
       {sanityProduct.store.variants && sanityProduct.store.variants.length > 0 && (
         <AddToCart 
-          variants={sanityProduct.store.variants}
+          variants={sanityProduct.store.variants
+            .filter((v: any) => v && v.store)
+            .map((v: any) => ({
+              id: v.store.gid,
+              title: v.store.title,
+              price: v.store.price,
+              compareAtPrice: v.store.compareAtPrice,
+              sku: v.store.sku,
+              availableForSale: v.store.inventory?.isAvailable !== false,
+            }))}
           productTitle={sanityProduct.store.title}
         />
       )}

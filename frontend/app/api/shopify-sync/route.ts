@@ -176,6 +176,10 @@ export async function POST(request: NextRequest) {
           // Create mutations for variants (as separate documents)
           const variantMutations = product.variants.map((variant) => {
             const variantId = variant.id.replace('gid://shopify/ProductVariant/', '')
+            
+            // Log variant data to see what we're receiving
+            console.log(`Variant ${variantId} data:`, JSON.stringify(variant, null, 2))
+            
             return {
               createOrReplace: {
                 _type: 'productVariant',
@@ -196,7 +200,7 @@ export async function POST(request: NextRequest) {
                   option3: variant.selectedOptions?.[2]?.value,
                   inventory: {
                     _type: 'inventory',
-                    isAvailable: variant.availableForSale,
+                    isAvailable: variant.availableForSale ?? variant.available ?? true,
                     management: 'SHOPIFY',
                     policy: 'DENY',
                   },
