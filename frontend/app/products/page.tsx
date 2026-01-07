@@ -74,15 +74,16 @@ export default async function ProductsPage() {
               </h2>
 
               {/* Price */}
-              {product.store.priceRange && (
+              {product.store.priceRange?.minVariantPrice && (
                 <div style={{
                   fontSize: '1rem',
                   fontWeight: '500',
                   marginBottom: '0.5rem',
                 }}>
-                  {product.store.priceRange.minVariantPrice.currencyCode}{' '}
+                  {product.store.priceRange.minVariantPrice.currencyCode ?? 'USD'}{' '}
                   {product.store.priceRange.minVariantPrice.amount}
-                  {product.store.priceRange.maxVariantPrice.amount !== 
+                  {product.store.priceRange.maxVariantPrice?.amount && 
+                   product.store.priceRange.maxVariantPrice.amount !== 
                    product.store.priceRange.minVariantPrice.amount && (
                     <span> - {product.store.priceRange.maxVariantPrice.amount}</span>
                   )}

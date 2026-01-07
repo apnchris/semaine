@@ -101,10 +101,10 @@ export default async function ProductPage({params}: Props) {
       )}
 
       {/* Price Range */}
-      {sanityProduct.store.priceRange && (
+      {sanityProduct.store.priceRange?.minVariantPrice && (
         <div className="product-price">
           <span className="price">
-            {sanityProduct.store.priceRange.minVariantPrice.currencyCode}{' '}
+            {sanityProduct.store.priceRange.minVariantPrice.currencyCode ?? 'USD'}{' '}
             {sanityProduct.store.priceRange.minVariantPrice.amount}
           </span>
         </div>
