@@ -165,7 +165,7 @@ export default async function ProductPage({params}: Props) {
               price: v.store.price,
               compareAtPrice: v.store.compareAtPrice,
               sku: v.store.sku,
-              availableForSale: v.store.inventory?.isAvailable !== false,
+              availableForSale: v.store.inventory?.isAvailable ?? false,
             }))}
           productTitle={sanityProduct.store.title}
         />

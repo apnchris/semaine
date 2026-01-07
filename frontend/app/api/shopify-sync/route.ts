@@ -177,8 +177,10 @@ export async function POST(request: NextRequest) {
           const variantMutations = product.variants.map((variant) => {
             const variantId = variant.id.replace('gid://shopify/ProductVariant/', '')
             
-            // Log variant data to see what we're receiving
-            console.log(`Variant ${variantId} data:`, JSON.stringify(variant, null, 2))
+            // Calculate availability based on inventory policy and quantity
+            const isAvailable = variant.inventoryPolicy === 'CONTINUE' 
+              ? true 
+              : (variant.inventoryQuantity ?? 0) > 0
             
             return {
               createOrReplace: {
@@ -200,9 +202,9 @@ export async function POST(request: NextRequest) {
                   option3: variant.selectedOptions?.[2]?.value,
                   inventory: {
                     _type: 'inventory',
-                    isAvailable: variant.availableForSale ?? variant.available ?? true,
+                    isAvailable: isAvailable,
                     management: 'SHOPIFY',
-                    policy: 'DENY',
+                    policy: variant.inventoryPolicy || 'DENY',
                   },
                   status: product.status,
                   createdAt: product.createdAt,
