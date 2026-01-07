@@ -1,4 +1,6 @@
 import Link from 'next/link'
+import styles from '../css/components/productCard.module.css'
+
 
 interface ProductCardProps {
   product: {
@@ -23,20 +25,21 @@ export default function ProductCard({product}: ProductCardProps) {
   return (
     <Link
       href={`/products/${product.store.slug.current}`}
-      className="product-card"
+      className={styles.productCard}
     >
       {/* Product Image */}
       {product.store.previewImageUrl && (
-        <div>
+        <div className={styles.productImageContainer}>
           <img
             src={product.store.previewImageUrl}
             alt={product.store.title}
+             className={styles.productImage}
           />
         </div>
       )}
 
       {/* Product Info */}
-      <div>
+      <div className={styles.productInfo}>
         <h2>
           {product.store.title}
         </h2>

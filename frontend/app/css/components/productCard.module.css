@@ -1,0 +1,30 @@
+.productCard {
+  border-radius: 26px;
+  position: relative;
+  overflow: hidden;
+  display: block;
+  width: calc( ((100vw - 130px) / 12) * 4 + 30px );
+}
+
+.productImageContainer {
+  line-height: 0;
+  width: 100%;
+  padding-top: 127%;
+}
+
+.productImage {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  object-fit: cover;
+  top: 0;
+  left: 0;
+}
+
+.productInfo {
+  position: absolute;
+  z-index: 1;
+  bottom: 0;
+  left: 0;
+  margin: 16px 20px;
+}
