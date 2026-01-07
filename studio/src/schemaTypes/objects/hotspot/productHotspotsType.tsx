@@ -15,5 +15,5 @@ export const productHotspotsType = defineField({
       tooltip: ProductTooltip,
       pathRoot: 'parent',
     },
-  },
+  } as any,
 })

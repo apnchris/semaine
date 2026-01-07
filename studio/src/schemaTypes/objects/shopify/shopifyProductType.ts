@@ -115,6 +115,47 @@ export const shopifyProductType = defineField({
       description: 'Image displayed in both cart and checkout',
     }),
     defineField({
+      name: 'images',
+      title: 'Images',
+      type: 'array',
+      description: 'All product images from Shopify',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          fields: [
+            defineField({
+              name: 'altText',
+              type: 'string',
+            }),
+            defineField({
+              name: 'height',
+              type: 'number',
+            }),
+            defineField({
+              name: 'id',
+              type: 'string',
+            }),
+            defineField({
+              name: 'url',
+              type: 'string',
+            }),
+            defineField({
+              name: 'src',
+              type: 'string',
+            }),
+            defineField({
+              name: 'originalSrc',
+              type: 'string',
+            }),
+            defineField({
+              name: 'width',
+              type: 'number',
+            }),
+          ],
+        }),
+      ],
+    }),
+    defineField({
       name: 'options',
       type: 'array',
       of: [{type: 'option'},

@@ -47,8 +47,7 @@ const PRODUCT_QUERY = defineQuery(`
       },
       productType,
       tags,
-      vendor,
-      images
+      vendor
     },
     seo {
       title,

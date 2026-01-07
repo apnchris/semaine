@@ -3,6 +3,25 @@ import {sanityFetch} from '@/sanity/lib/live'
 import Link from 'next/link'
 import {PortableText} from '@portabletext/react'
 
+type FooterLink = {
+  _type: string
+  text?: string
+  url?: string
+  newWindow?: boolean
+  title?: string
+  credits?: any
+}
+
+type FooterLinkGroup = {
+  title: string
+  links?: FooterLink[]
+}
+
+type Footer = {
+  links?: FooterLinkGroup[]
+  newsletterText?: string
+}
+
 const portableTextComponents = {
   marks: {
     linkExternal: ({value, children}: any) => {
@@ -29,7 +48,7 @@ export default async function Footer() {
     query: settingsQuery,
   })
 
-  const footer = settings?.footer
+  const footer = settings?.footer as Footer | undefined
   const currentYear = new Date().getFullYear()
 
   if (!footer?.links || footer.links.length === 0) {
@@ -39,14 +58,14 @@ export default async function Footer() {
   return (
     <footer>
       <menu className='main-grid font-xs'>
-        {footer.links.map((group: any, index: number) => (
+        {footer.links.map((group, index) => (
           <li key={index}>
             <h3>
               {group.title}
             </h3>
             {group.links && group.links.length > 0 && (
               <ul>
-                {group.links.map((link: any, linkIndex: number) => (
+                {group.links.map((link, linkIndex) => (
                   <li key={linkIndex}>
                     {link._type === 'linkCredits' ? (
                       <div className='footer-credits'>
