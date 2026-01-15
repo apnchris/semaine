@@ -17,7 +17,7 @@ import Header from '@/app/components/Header'
 import Link from 'next/link'
 import {Logo} from '@/app/components/Vectors'
 import CartOverlay from '@/app/components/CartOverlay'
-import ScrollBottomDetector from '@/app/components/ScrollBottomDetector'
+import HideFooter from '@/app/components/HideFooter'
 import {CartProvider} from '@/app/context/CartContext'
 import * as demo from '@/sanity/lib/demo'
 import {sanityFetch, SanityLive} from '@/sanity/lib/live'
@@ -29,7 +29,7 @@ import localFont from 'next/font/local'
 const baikal = localFont({
   src: [
     {
-      path: '../public/fonts/BaikalTrial-Book.woff2',
+      path: '../public/fonts/Baikal-Book.woff2',
       weight: '340',
       style: 'normal',
     },
@@ -39,7 +39,7 @@ const baikal = localFont({
       style: 'italic',
     },
     {
-      path: '../public/fonts/BaikalTrial-SemiBold.woff2',
+      path: '../public/fonts/Baikal-SemiBold.woff2',
       weight: '600',
       style: 'normal',
     },
@@ -53,7 +53,7 @@ const baikal = localFont({
 const marlfield = localFont({
   src: [
     {
-      path: '../public/fonts/TRIAL_OTT_Marlfield-Bold.woff2',
+      path: '../public/fonts/OTT_Marlfield-Bold.woff2',
       style: 'normal',
     },
   ],
@@ -99,7 +99,7 @@ export default async function RootLayout({children}: {children: React.ReactNode}
   return (
     <html lang="en" className={`${baikal.className} ${marlfield.variable}`}>
       <body>
-        <ScrollBottomDetector />
+        <HideFooter />
         <CartProvider>
           <section>
             <SanityLive onError={handleError} />

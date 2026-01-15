@@ -4,6 +4,7 @@ import {useEffect, useRef} from 'react'
 import SanityImage from '@/app/components/SanityImage'
 import Link from 'next/link'
 import GuideCard from '@/app/components/GuideCard'
+import ProductCard from '@/app/components/ProductCard'
 import styles from '../css/components/picksModule.module.css'
 import Swiper from 'swiper'
 import { Navigation, Pagination } from 'swiper/modules';
@@ -161,32 +162,18 @@ export default function PicksModule({
                 }
 
                 // Render product items
-                const itemPath = 'products'
-                const itemTitle = item.title || item.store?.title || 'Item'
-
-                return (
-                  <div key={index} className={styles.pickItem}>
-                    <Link href={`/${itemPath}/${item.slug.current}`} className={styles.pickLink}>
-                      {item.featuredImage?.asset && (
-                        <div className={styles.pickImageWrapper}>
-                          <SanityImage
-                            id={item.featuredImage.asset._id}
-                            alt={item.featuredImage.alt || itemTitle}
-                            className={styles.pickImage}
-                            width={400}
-                            height={400}
-                            mode="cover"
-                          />
-                        </div>
+                if (item._type === 'product') {
+                  return (
+                    <div key={index} className={`swiper-slide ${styles.pickItem}`}>
+                      <ProductCard product={item} />
+                      {link.message && (
+                        <p className={`${styles.pickMessage} font-xs`}>{link.message}</p>
                       )}
-                      <h3 className={`${styles.pickTitle} font-s`}>{itemTitle}</h3>
-                    </Link>
+                    </div>
+                  )
+                }
 
-                    {link.message && (
-                      <p className={`${styles.pickMessage} font-xs`}>{link.message}</p>
-                    )}
-                  </div>
-                )
+                return null
               })}
             </div>
 

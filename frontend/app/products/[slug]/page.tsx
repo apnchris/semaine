@@ -1,8 +1,8 @@
 import {notFound} from 'next/navigation'
 import {sanityFetch} from '@/sanity/lib/live'
 import {defineQuery} from 'next-sanity'
-import AddToCart from '@/app/components/AddToCart'
-import SanityImage from '@/app/components/SanityImage'
+import ProductModule from '@/app/components/ProductModule'
+import HideFooter from '@/app/components/HideFooter'
 
 type Props = {
   params: Promise<{slug: string}>
@@ -58,6 +58,11 @@ const PRODUCT_QUERY = defineQuery(`
       title,
       description,
       image
+    },
+    "shopPage": *[_type == "shopPage"][0] {
+      shipping,
+      returns,
+      payment
     }
   }
 `)
@@ -72,79 +77,17 @@ export default async function ProductPage({params}: Props) {
   })
   
   if (!sanityProduct || !sanityProduct.store) notFound()
-  
-  // Debug logging
-  console.log('Variants data:', JSON.stringify(sanityProduct.store.variants, null, 2))
-  
+    
   return (
-    <article className="product-page">
-      
-      {/* Product Images from Shopify */}
-      {sanityProduct.store.images && sanityProduct.store.images.length > 0 && (
-        <div className="product-images">
-          {sanityProduct.store.images.map((image: any, index: number) => (
-            <div key={image.id || index} className="product-image">
-              <img
-                src={image.url || image.src}
-                alt={image.altText || sanityProduct.store.title}
-                width={image.width || 800}
-                height={image.height || 800}
-              />
-            </div>
-          ))}
-        </div>
-      )}
-
-      <h1>{sanityProduct.store.title}</h1>
-      
-      {/* Editorial Content from Sanity */}
-      {sanityProduct.body && (
-        <div className="product-description">
-          {/* You can render portable text here with a PortableText component */}
-          <p>Editorial content available</p>
-        </div>
-      )}
-      
-      {/* Shopify Description */}
-      {sanityProduct.store.descriptionHtml && (
-        <div 
-          className="shopify-description" 
-          dangerouslySetInnerHTML={{__html: sanityProduct.store.descriptionHtml}}
+    <>
+      <HideFooter pageType="product" />
+      <div className="product-page">
+        <ProductModule 
+          product={sanityProduct}
+          showTerms={true}
+          showEditorialContent={true}
         />
-      )}
-
-      {/* Shopify Metafields */}
-      {sanityProduct.store.metafields && (
-        <div className="product-metafields">
-          {sanityProduct.store.metafields.details_column_01 && (
-            <div className="metafield-details">
-              <pre style={{whiteSpace: 'pre-wrap'}}>{sanityProduct.store.metafields.details_column_01}</pre>
-            </div>
-          )}
-          {sanityProduct.store.metafields.details_column_02 && (
-            <div className="metafield-details">
-              <pre style={{whiteSpace: 'pre-wrap'}}>{sanityProduct.store.metafields.details_column_02}</pre>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Add to Cart */}
-      {sanityProduct.store.variants && sanityProduct.store.variants.length > 0 && (
-        <AddToCart 
-          variants={sanityProduct.store.variants
-            .filter((v: any) => v && v.store)
-            .map((v: any) => ({
-              id: v.store.gid,
-              title: v.store.title,
-              price: v.store.price,
-              compareAtPrice: v.store.compareAtPrice,
-              sku: v.store.sku,
-              availableForSale: v.store.inventory?.isAvailable ?? false,
-            }))}
-          productTitle={sanityProduct.store.title}
-        />
-      )}
-    </article>
+      </div>
+    </>
   )
 }

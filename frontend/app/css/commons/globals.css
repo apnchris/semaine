@@ -47,6 +47,11 @@ html {
   overflow-x: hidden;
 }
 
+/* Product page styles */
+body.page-product footer {
+  display: none;
+}
+
 ul,
 ol,
 menu {
@@ -94,6 +99,11 @@ input:-webkit-autofill:active {
 
 .uppercase {
   text-transform: uppercase;
+}
+
+.book {
+  font-weight: 340;
+  letter-spacing: 0;
 }
 
 .serif {

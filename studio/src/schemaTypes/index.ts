@@ -14,6 +14,7 @@ import {footerType} from './objects/global/footerType'
 import {gridItemType} from './objects/module/gridItemType'
 import {gridType} from './objects/module/gridType'
 import {gridGuide} from './objects/module/gridGuide'
+import {gridShop} from './objects/module/gridShop'
 import {heroType} from './objects/module/heroType'
 import {imageCallToActionType} from './objects/module/imageCallToActionType'
 import {imageFeaturesType} from './objects/module/imageFeaturesType'
@@ -46,6 +47,7 @@ import {shopifyProductVariantType} from './objects/shopify/shopifyProductVariant
 import {shopType} from './objects/shopify/shopType'
 import {spotType} from './objects/hotspot/spotType'
 import {picksModule} from './objects/module/picks'
+import {productModule} from './objects/module/productModule'
 
 
 // Objects used as annotations must be imported first
@@ -68,6 +70,7 @@ const objects = [
   gridItemType,
   gridType,
   gridGuide,
+  gridShop,
   heroType,
   imageCallToActionType,
   imageFeaturesType,
@@ -92,7 +95,8 @@ const objects = [
   shopifyProductVariantType,
   shopType,
   spotType,
-  picksModule
+  picksModule,
+  productModule
 ]
 
 import {portableTextType} from './portableText/portableTextType'
@@ -137,13 +141,15 @@ import {settingsType} from './singletons/settingsType'
 import {tasteMakers} from './singletons/tasteMakers'
 import {learn} from './singletons/learn'
 import {guidePage} from './singletons/guidePage'
+import {shopPage} from './singletons/shopPage'
 
 const singletons = [
   homeType,
   settingsType,
   tasteMakers,
   learn,
-  guidePage
+  guidePage,
+  shopPage
 ]
 
 export const schemaTypes = [...annotations, ...objects, ...singletons, ...blocks, ...documents]

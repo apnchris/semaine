@@ -1,0 +1,101 @@
+.productGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.productTitle {
+  margin: 0 7px;
+}
+
+.productActions {
+  height: 50dvh;
+  padding-top: 25dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.productInfoBlock {
+  height: 25dvh;
+  padding: 20px calc(var(--gap) * 2 + var(--column)) 20px calc(var(--gap) * 1.5 + var(--column));
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.productInfoBlockGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--gap);
+}
+
+.productTermsColumn {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+
+.productDescription {
+  background-color: #F5F5F5;
+}
+
+.productDetails {
+  background-color: #DADADA;
+}
+
+.productTerms {
+  background-color: #B1B1B1;
+}
+
+.addToCart {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--gap);
+}
+
+.variantSelector {
+  display: flex;
+  gap: 7px;
+}
+
+.variantLabel {
+  border-radius: 22px;
+  height: 43px;
+  width: 43px;
+  background-color: #EBEBEBCC;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.soldOut:not(.active) :global(span) {
+  opacity: .3;
+}
+
+.addToCartButtonContainer,
+.active {
+  background-color: #000000CC;
+  color: #fff;
+}
+
+.addToCartButtonContainer {
+  border-radius: 22px;
+  height: 43px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 30px;
+  width: calc(var(--column) * 2 + var(--gap) * 1);
+  cursor: pointer;
+}
+
+.disabled {
+  justify-content: center;
+  background-color: #EBEBEBCC;
+  color: #000;
+}
+
+.disabled span {
+  display: none;
+}

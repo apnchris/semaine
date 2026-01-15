@@ -60,8 +60,6 @@ async function fetchProductMetafields(productGid: string) {
     const key = node.key.replace('data.', '') // Remove namespace if present
     metafields[key] = node.value
   })
-
-  console.log(`Fetched metafields for ${productGid}:`, metafields)
   return metafields
 }
 
@@ -119,11 +117,6 @@ export async function POST(request: NextRequest) {
   try {
     const payload: WebhookPayload = await request.json()
 
-    console.log('Received Shopify sync webhook:', payload.action)
-    if ('products' in payload && payload.products.length > 0) {
-      console.log('Sample product data:', JSON.stringify(payload.products[0], null, 2))
-    }
-
     // Handle product deletion
     if (payload.action === 'delete') {
       const mutations = payload.productIds.map((id) => ({
@@ -136,7 +129,6 @@ export async function POST(request: NextRequest) {
       }))
 
       await sanityClient.transaction(mutations).commit()
-      console.log(`Marked ${payload.productIds.length} products as deleted`)
       return NextResponse.json({success: true})
     }
 
@@ -148,13 +140,10 @@ export async function POST(request: NextRequest) {
 
           // Fetch metafields from Shopify
           let metafields = product.metafields || {}
-          console.log(`Product ${product.title} (${product.id}) webhook metafields:`, product.metafields)
           
           if (!product.metafields || Object.keys(product.metafields).length === 0) {
-            console.log(`Fetching metafields from Shopify API for ${product.id}...`)
             try {
               metafields = await fetchProductMetafields(product.id)
-              console.log(`Fetched metafields:`, metafields)
             } catch (error) {
               console.error(`Failed to fetch metafields for ${product.id}:`, error)
             }
@@ -275,7 +264,6 @@ export async function POST(request: NextRequest) {
       const mutations = allMutations.flat()
 
       const result = await sanityClient.transaction(mutations as any).commit()
-      console.log(`Synced ${payload.products.length} products with variants and images`)
       return NextResponse.json({success: true, synced: payload.products.length})
     }
 

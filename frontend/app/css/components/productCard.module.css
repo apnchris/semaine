@@ -3,7 +3,7 @@
   position: relative;
   overflow: hidden;
   display: block;
-  width: calc( ((100vw - 130px) / 12) * 4 + 30px );
+  width: calc( ((100vw - 130px) / 12) * 3 + 20px );
 }
 
 .productImageContainer {

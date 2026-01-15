@@ -4,12 +4,12 @@
   --font-sm: 15px;
   --font-m: 21px;
   --font-l: 37px;
-  --gap: 16px;
+  --gap: 10px;
   --column: calc((100vw - (var(--gap) * 13)) / 12);
 }
 
 @media screen and (max-width: 820px) {
   :root {
-    --gap: 12px;
+    --gap: 10px;
   }
 }

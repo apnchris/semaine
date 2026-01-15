@@ -2,6 +2,7 @@
 
 import {useState} from 'react'
 import {useCart} from '@/app/context/CartContext'
+import styles from '../css/components/productPage.module.css'
 
 interface AddToCartProps {
   variants: Array<{
@@ -54,56 +55,35 @@ export default function AddToCart({variants, productTitle}: AddToCartProps) {
   }
 
   return (
-    <div className="add-to-cart">
+    <div className={`${styles.addToCart} font-s`}>
       {variants.length > 1 && (
-        <div className="variant-selector">
-          <div style={{marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '8px'}}>
-            {variants.map((variant) => (
-              <label
-                key={variant.id}
-                className={selectedVariant === variant.id ? 'active' : ''}
-              >
-                <input
-                  type="radio"
-                  name="variant"
-                  value={variant.id}
-                  checked={selectedVariant === variant.id}
-                  onChange={(e) => setSelectedVariant(e.target.value)}
-                  disabled={!variant.availableForSale}
-                />
-                <span>
-                  {variant.title}
-                </span>
-              </label>
-            ))}
-          </div>
+        <div className={`${styles.variantSelector}`}>
+          {variants.map((variant) => (
+            <label
+              key={variant.id}
+              className={`${selectedVariant === variant.id ? styles.active : ''} ${!variant.availableForSale ? styles.soldOut : ''} ${styles.variantLabel}`}
+            >
+              <input
+                type="radio"
+                name="variant"
+                value={variant.id}
+                checked={selectedVariant === variant.id}
+                onChange={(e) => setSelectedVariant(e.target.value)}
+                className={`${styles.variantInput}`}
+              />
+              <span>
+                {variant.title}
+              </span>
+            </label>
+          ))}
         </div>
       )}
 
-      <div className="quantity-selector" style={{display: 'none'}}>
-        <label htmlFor="quantity">
-          <strong>Quantity:</strong>
-        </label>
-        <input
-          id="quantity"
-          type="number"
-          min="1"
-          value={quantity}
-          onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-          disabled={!selectedVariantData?.availableForSale}
-          style={{
-            padding: '8px',
-            marginLeft: '8px',
-            width: '80px',
-            opacity: selectedVariantData?.availableForSale ? 1 : 0.5,
-          }}
-        />
-      </div>
-
-      <div className='add-to-cart-container'>
+      <label className={`${styles.addToCartButtonContainer} ${isLoading || !selectedVariantData?.availableForSale ? styles.disabled : ''}`}>
         <button
           onClick={handleAddToCart}
           disabled={isLoading || !selectedVariantData?.availableForSale}
+          className={`${styles.addToCartButton}`}
         >
           {isLoading
             ? 'Adding...'
@@ -112,8 +92,8 @@ export default function AddToCart({variants, productTitle}: AddToCartProps) {
               : 'Add to Cart'}
         </button>
 
-        <span className='product-price'>${selectedVariantData?.price}</span>
-      </div>
+        <span className={styles.productPrice}>${selectedVariantData?.price}</span>
+      </label>
 
       {message && (
         <p
