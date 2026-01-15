@@ -126,10 +126,8 @@ export default function PicksModule({
 
         {curator && (
           <div className={styles.curator}>
-            <p className="font-s">Curated by</p>
-            <Link href={`/${curatorPath}/${curator.slug.current}`} className="font-m">
-              {curator.name}
-            </Link>
+            <p className="font-l uppercase" dangerouslySetInnerHTML={{ __html: curator._type === 'tasteMaker' ? 'Taste<br>maker' : 'Taste<br>breaker' }} />
+            <p className="font-l">{curator.name}</p>
           </div>
         )}
 
@@ -165,7 +163,7 @@ export default function PicksModule({
                 if (item._type === 'product') {
                   return (
                     <div key={index} className={`swiper-slide ${styles.pickItem}`}>
-                      <ProductCard product={item} />
+                      <ProductCard product={item as any} />
                       {link.message && (
                         <p className={`${styles.pickMessage} font-xs`}>{link.message}</p>
                       )}

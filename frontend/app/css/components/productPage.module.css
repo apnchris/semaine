@@ -53,6 +53,10 @@
   padding: var(--gap);
 }
 
+.noVariants {
+  justify-content: end;
+}
+
 .variantSelector {
   display: flex;
   gap: 7px;

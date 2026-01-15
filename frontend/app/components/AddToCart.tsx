@@ -55,7 +55,7 @@ export default function AddToCart({variants, productTitle}: AddToCartProps) {
   }
 
   return (
-    <div className={`${styles.addToCart} font-s`}>
+    <div className={`${styles.addToCart} ${variants.length > 1 ? styles.withVariants : styles.noVariants} font-s`}>
       {variants.length > 1 && (
         <div className={`${styles.variantSelector}`}>
           {variants.map((variant) => (
