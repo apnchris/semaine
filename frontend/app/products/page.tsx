@@ -10,6 +10,7 @@ const SHOP_PAGE_QUERY = defineQuery(`
     "products": *[_type == "product" && !store.isDeleted] | order(store.title asc) {
       _id,
       _type,
+      thumbSize,
       colorTheme->{
         title,
         text,
@@ -46,8 +47,10 @@ const SHOP_PAGE_QUERY = defineQuery(`
           },
           alt
         },
-        products[]->{          _id,
+        products[]->{        
+          _id,
           _type,
+          thumbSize,
           colorTheme->{
             title,
             text,
@@ -199,6 +202,8 @@ export default async function ProductsPage() {
                   tasteMakerBreaker={module.tasteMakerBreaker}
                   customCurator={module.customCurator}
                   links={module.links}
+                  colorOne={module.colorOne}
+                  colorTwo={module.colorTwo}
                 />
               )}
               {module._type === 'gridShop' && module.products && (

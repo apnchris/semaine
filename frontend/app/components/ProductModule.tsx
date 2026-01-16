@@ -2,6 +2,7 @@
 
 import AddToCart from '@/app/components/AddToCart'
 import ProductImagesSwiper from '@/app/components/ProductImagesSwiper'
+import RelatedProducts from '@/app/components/RelatedProducts'
 import {DeliveryIcon, PaymentIcon, ReturnIcon} from '@/app/components/Vectors'
 import styles from '../css/components/productPage.module.css'
 
@@ -18,6 +19,7 @@ interface ProductDetailsProps {
       variants?: any[]
     }
     body?: any[]
+    modules?: any[]
     shopPage?: {
       shipping?: string
       returns?: string
@@ -124,10 +126,19 @@ export default function ProductModule({
         )}
 
         {/* Editorial Content from Sanity */}
-        {showEditorialContent && product.body && (
+        {showEditorialContent && (
           <div className={`${styles.productEditorialContent}`}>
             {/* You can render portable text here with a PortableText component */}
-            <p>Editorial content available</p>
+            {product.body && <p>Editorial content available</p>}
+            
+            {/* Related Products Modules */}
+            {product.modules && product.modules.length > 0 && (
+              <div className={styles.productModules}>
+                {product.modules.map((module: any) => (
+                  <RelatedProducts key={module._key} module={module} />
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>

@@ -103,3 +103,7 @@
 .disabled span {
   display: none;
 }
+
+.productEditorialContent {
+  padding-bottom: 83px;
+}

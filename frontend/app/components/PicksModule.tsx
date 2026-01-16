@@ -44,6 +44,8 @@ interface PickItem {
 interface PicksModuleProps {
   moduleKey?: string
   title?: string
+  colorOne?: string | { hex: string }
+  colorTwo?: string | { hex: string }
   picture?: {
     asset: {
       _id: string
@@ -74,6 +76,8 @@ export default function PicksModule({
   tasteMakerBreaker,
   customCurator,
   links,
+  colorOne,
+  colorTwo,
 }: PicksModuleProps) {
   const curator = tasteMakerBreaker?.[0]
   const curatorPath = curator?._type === 'tasteMaker' ? 'tastemakers' : 'tastebreakers'
@@ -110,7 +114,13 @@ export default function PicksModule({
   }, [])
 
   return (
-    <div className={`${styles.picksModule} picks-module`}>
+    <div 
+      className={`${styles.picksModule} picks-module`}
+      style={{
+        '--color-one': typeof colorOne === 'object' ? colorOne.hex : colorOne,
+        '--color-two': typeof colorTwo === 'object' ? colorTwo.hex : colorTwo,
+      } as React.CSSProperties}
+    >
       <div className={styles.picksCover}>
         {picture?.asset && (
           <div className={styles.picksImageWrapper}>

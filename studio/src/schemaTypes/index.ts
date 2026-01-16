@@ -48,6 +48,7 @@ import {shopType} from './objects/shopify/shopType'
 import {spotType} from './objects/hotspot/spotType'
 import {picksModule} from './objects/module/picks'
 import {productModule} from './objects/module/productModule'
+import {relatedProducts} from './objects/module/relatedProducts'
 
 
 // Objects used as annotations must be imported first
@@ -96,7 +97,8 @@ const objects = [
   shopType,
   spotType,
   picksModule,
-  productModule
+  productModule,
+  relatedProducts
 ]
 
 import {portableTextType} from './portableText/portableTextType'

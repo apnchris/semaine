@@ -26,7 +26,7 @@ export default function ProductCard({product}: ProductCardProps) {
   return (
     <Link
       href={`/products/${product.store.slug.current}`}
-      className={styles.productCard}
+      className={`${styles.productCard} ${product.thumbSize ? styles.bigThumbnail : ''}`}
     >
       {/* Product Image */}
       {product.store.previewImageUrl && (
@@ -34,7 +34,7 @@ export default function ProductCard({product}: ProductCardProps) {
           <img
             src={product.store.previewImageUrl}
             alt={product.store.title}
-            className={product.thumbSize ? styles.productImageLarge : styles.productImage}
+            className={`${styles.productImage}`}
           />
         </div>
       )}

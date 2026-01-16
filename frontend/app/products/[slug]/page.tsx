@@ -22,6 +22,38 @@ const PRODUCT_QUERY = defineQuery(`
     body[]{
       ...,
     },
+    modules[]{
+      _key,
+      _type,
+      title,
+      products[]->{        _id,
+        _type,
+        thumbSize,
+        colorTheme->{
+          title,
+          text,
+          background
+        },
+        store {
+          id,
+          title,
+          slug,
+          status,
+          previewImageUrl,
+          priceRange {
+            minVariantPrice,
+            maxVariantPrice
+          },
+          productType,
+          vendor,
+          tags
+        },
+        seo {
+          title,
+          description
+        }
+      }
+    },
     store {
       id,
       title,

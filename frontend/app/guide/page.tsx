@@ -12,6 +12,8 @@ const GUIDE_PAGE_QUERY = defineQuery(`
       _type,
       _type == "picksModule" => {
         title,
+        colorOne,
+        colorTwo,
         picture {
           asset->{
             _id,

@@ -45,8 +45,10 @@ export const productType = defineType({
       group: 'editorial',
     }),
     defineField({
-      name: 'body',
-      type: 'portableText',
+      name: 'modules',
+      title: 'Modules',
+      type: 'array',
+      of: [{type: 'relatedProducts'}],
       group: 'editorial',
     }),
     defineField({

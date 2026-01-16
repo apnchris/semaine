@@ -130,7 +130,7 @@ export default function TastemakersClient({
             </div>
 
             <div className={styles.intro}>
-              <h1 className="font-l">{pageData?.title || 'Taste Makers & Breakers'}</h1>
+              <h1 className="font-l">Taste<span style={{color: '#6881f5'}}>Makers</span> and Taste<span style={{color: '#ffbd00'}}>Breakers</span></h1>
               {pageData?.text && <p className="font-m">{pageData.text}</p>}
             </div>
           </div>
@@ -143,13 +143,12 @@ export default function TastemakersClient({
                   person._type === 'tasteMaker' ? styles.tastemakerCard : styles.tastebreakerCard
 
                 return (
-                  <div className={`${styles.profileCard} ${cardClass || ''}`}>
+                  <div key={person._id} className={`${styles.profileCard} ${cardClass || ''}`}>
                     {viewMode === 'grid' && (
                       <FavoriteButton className={styles.favoriteButton} />
                     )}
                     
                     <Link
-                      key={person._id}
                       href={`/${basePath}/${person.slug.current}`}
                       className={`${styles.profileCardLink}`}
                     >

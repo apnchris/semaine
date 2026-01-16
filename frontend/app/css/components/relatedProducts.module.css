@@ -1,0 +1,84 @@
+.relatedProducts {
+  width: 100%;
+  padding: 10px 0;
+  min-height: 50dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.title {
+  margin-bottom: 45px;
+  text-align: center;
+}
+
+.swiper {
+  --swiper-pagination-bullet-horizontal-gap: 2px;
+  --swiper-pagination-bullet-inactive-opacity: 1;
+  --swiper-pagination-bullet-inactive-color: #D9D9D9;
+  --swiper-pagination-color: #7C7C7C;
+
+  position: relative;
+  width: 50vw;
+  overflow: hidden;
+}
+
+.swiperWrapper {
+  display: flex;
+}
+
+.slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pagination {
+  position: relative;
+  z-index: 10;
+  width: fit-content!important;
+  left: auto!important;
+  transform: none!important;
+  bottom: auto!important;
+  height: fit-content!important;
+}
+
+.paginationWrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.swiperBar {
+  display: flex;
+  align-items: center;
+  width: calc( ((100vw - 130px) / 12) * 3 + 20px + 20px + 25px );
+  z-index: 10;
+  margin: 20px auto 0;
+}
+
+.swipePrev,
+.swipeNext {
+  cursor: pointer;
+}
+
+.swipePrev {
+  line-height: 0;
+}
+
+.swipeNext {
+  transform: rotateY(180deg);
+  line-height: 0;
+}
+
+@media (max-width: 768px) {
+  .title {
+    margin-bottom: 20px;
+  }
+  
+  .swiperBar {
+    gap: 10px;
+    margin-top: 15px;
+  }
+}

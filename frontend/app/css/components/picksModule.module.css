@@ -58,7 +58,7 @@
 
 .picksWrapper {
   position: relative;
-  background: #FFBD00;
+  background: var(--color-one);
 }
 
 .picksTitle {
@@ -67,7 +67,7 @@
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 1;
-  color: #FFBD00;
+  color: var(--color-one);
   text-align: center;
 }
 
@@ -76,7 +76,7 @@
   bottom: 0;
   left: 0;
   margin: 10px;
-  color: #fff;
+  color: var(--color-two);
 }
 
 .pickMessage {
@@ -132,7 +132,7 @@
   position: absolute;
   bottom: 0;
   right: 0;
-  color: #fff;
+  color: var(--color-two);
   z-index: 1;
   display: flex;
   width: 100%;
@@ -148,5 +148,5 @@
 }
 
 .curator p:last-child {
-  color: #FFBD00;
+  color: var(--color-one);
 }
