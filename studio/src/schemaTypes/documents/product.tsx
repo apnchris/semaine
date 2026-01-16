@@ -38,12 +38,12 @@ export const productType = defineType({
       type: 'proxyString',
       options: {field: 'store.slug.current'},
     }),
-    // defineField({
-    //   name: 'colorTheme',
-    //   type: 'reference',
-    //   to: [{type: 'colorTheme'}],
-    //   group: 'editorial',
-    // }),
+    defineField({
+      name: 'thumbSize',
+      title: 'Thumbnail Size',
+      type: 'boolean',
+      group: 'editorial',
+    }),
     defineField({
       name: 'body',
       type: 'portableText',

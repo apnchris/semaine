@@ -148,11 +148,7 @@ export const allProductsQuery = defineQuery(`
   *[_type == "product" && !store.isDeleted] | order(store.title asc) {
     _id,
     _type,
-    colorTheme->{
-      title,
-      text,
-      background
-    },
+    thumbSize,
     store {
       id,
       title,

@@ -32,6 +32,16 @@ export const picksModule = defineField({
       },
     }),
     defineField({
+      name: 'colorOne',
+      title: 'Color 01',
+      type: 'color',
+    }),
+    defineField({
+      name: 'colorTwo',
+      title: 'Color 02',
+      type: 'color',
+    }),
+    defineField({
       title: 'TasteMaker/Breaker',
       name: 'tasteMakerBreaker',
       type: 'array',
@@ -88,7 +98,27 @@ export const picksModule = defineField({
               title: 'Message',
               rows: 3
             }
-          ]
+          ],
+          preview: {
+            select: {
+              title: 'items.0.store.title',
+              guideTitle: 'items.0.title',
+              productImageUrl: 'items.0.store.previewImageUrl',
+              guideImage: 'items.0.featuredImage',
+              message: 'message',
+            },
+            prepare(selection) {
+              const {title, guideTitle, productImageUrl, guideImage, message} = selection
+              const displayTitle = title || guideTitle || 'No item selected'
+              
+              return {
+                title: displayTitle,
+                subtitle: message || 'No message',
+                media: guideImage,
+                imageUrl: productImageUrl,
+              }
+            },
+          },
         }
       ],
     }),

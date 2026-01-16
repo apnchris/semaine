@@ -75,6 +75,7 @@ const SHOP_PAGE_QUERY = defineQuery(`
         tasteMakerBreaker[]->{
           _id,
           name,
+          title,
           slug,
           _type
         },
@@ -192,6 +193,7 @@ export default async function ProductsPage() {
             <div key={module._key}>
               {module._type === 'picksModule' && module.links && (
                 <PicksModule
+                  moduleKey={module._key}
                   title={module.title}
                   picture={module.picture}
                   tasteMakerBreaker={module.tasteMakerBreaker}
@@ -206,8 +208,8 @@ export default async function ProductsPage() {
                   </h2>
 
                   <div className={`${styles.storeGrid}`}>
-                    {module.products.map((product: any) => (
-                      <ProductCard key={product._id} product={product} />
+                    {module.products.map((product: any, index: number) => (
+                      <ProductCard key={`${module._key}-${product._id}-${index}`} product={product} />
                     ))}
                   </div>
                 </div>

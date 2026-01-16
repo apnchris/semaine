@@ -554,6 +554,12 @@ export type AllSanitySchemaTypes =
 
 export declare const internalGroqTypeReferenceTo: unique symbol
 
+type ArrayOf<T> = Array<
+  T & {
+    _key: string
+  }
+>
+
 // Source: sanity/lib/queries.ts
 // Variable: settingsQuery
 // Query: *[_type == "settings"][0]{    ...,    footer{      links[]{        title,        links[]{          _type,          text,          url,          newWindow,          _type == 'linkCredits' => {            title,            credits          }        }      },      newsletterText    }  }

@@ -42,6 +42,7 @@ interface PickItem {
 }
 
 interface PicksModuleProps {
+  moduleKey?: string
   title?: string
   picture?: {
     asset: {
@@ -53,6 +54,7 @@ interface PicksModuleProps {
   tasteMakerBreaker?: Array<{
     _id: string
     name: string
+    title: string
     slug: {
       current: string
     }
@@ -66,6 +68,7 @@ interface PicksModuleProps {
 }
 
 export default function PicksModule({
+  moduleKey,
   title,
   picture,
   tasteMakerBreaker,
@@ -107,7 +110,7 @@ export default function PicksModule({
   }, [])
 
   return (
-    <div className={styles.picksModule}>
+    <div className={`${styles.picksModule} picks-module`}>
       <div className={styles.picksCover}>
         {picture?.asset && (
           <div className={styles.picksImageWrapper}>
@@ -127,7 +130,7 @@ export default function PicksModule({
         {curator && (
           <div className={styles.curator}>
             <p className="font-l uppercase" dangerouslySetInnerHTML={{ __html: curator._type === 'tasteMaker' ? 'Taste<br>maker' : 'Taste<br>breaker' }} />
-            <p className="font-l">{curator.name}</p>
+            <p className="font-l">{curator.name}<br />{curator.title}</p>
           </div>
         )}
 
@@ -150,7 +153,7 @@ export default function PicksModule({
                 // Render GuideCard for guides
                 if (item._type === 'guide') {
                   return (
-                    <div key={index} className={`swiper-slide ${styles.pickItem}`}>
+                    <div key={`${moduleKey || 'picks'}-${item._id}-${index}`} className={`swiper-slide ${styles.pickItem}`}>
                       <GuideCard guide={item as any} />
                       {link.message && (
                         <p className={`${styles.pickMessage} font-xs`}>{link.message}</p>
@@ -162,7 +165,7 @@ export default function PicksModule({
                 // Render product items
                 if (item._type === 'product') {
                   return (
-                    <div key={index} className={`swiper-slide ${styles.pickItem}`}>
+                    <div key={`${moduleKey || 'picks'}-${item._id}-${index}`} className={`swiper-slide ${styles.pickItem}`}>
                       <ProductCard product={item as any} />
                       {link.message && (
                         <p className={`${styles.pickMessage} font-xs`}>{link.message}</p>

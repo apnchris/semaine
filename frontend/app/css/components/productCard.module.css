@@ -6,10 +6,14 @@
   width: calc( ((100vw - 130px) / 12) * 3 + 20px );
 }
 
+:global(.picks-module) .productCard {
+  width: 100%
+}
+
 .productImageContainer {
   line-height: 0;
   width: 100%;
-  padding-top: 127%;
+  padding-top: 128.57%;
 }
 
 .productImage {

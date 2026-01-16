@@ -5,6 +5,7 @@ import styles from '../css/components/productCard.module.css'
 interface ProductCardProps {
   product: {
     _id: string
+    thumbSize?: boolean
     store: {
       slug: {
         current: string
@@ -33,7 +34,7 @@ export default function ProductCard({product}: ProductCardProps) {
           <img
             src={product.store.previewImageUrl}
             alt={product.store.title}
-             className={styles.productImage}
+            className={product.thumbSize ? styles.productImageLarge : styles.productImage}
           />
         </div>
       )}

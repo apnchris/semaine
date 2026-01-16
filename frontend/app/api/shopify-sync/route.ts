@@ -138,6 +138,21 @@ export async function POST(request: NextRequest) {
         payload.products.map(async (product) => {
           const productId = product.id.replace('gid://shopify/Product/', '')
 
+          // Fetch existing document to preserve custom fields (check both published and draft)
+          const existingDocs = await sanityClient.fetch(
+            `{
+              "published": *[_id == $id][0]{_id, _rev, body, thumbSize, seo},
+              "draft": *[_id == $draftId][0]{_id, _rev, body, thumbSize, seo}
+            }`,
+            {
+              id: `shopifyProduct-${productId}`,
+              draftId: `drafts.shopifyProduct-${productId}`
+            }
+          ).catch(() => ({ published: null, draft: null }))
+
+          // Use draft if available, otherwise use published
+          const existingDoc = existingDocs.draft || existingDocs.published
+
           // Fetch metafields from Shopify
           let metafields = product.metafields || {}
           
@@ -204,59 +219,90 @@ export async function POST(request: NextRequest) {
             }
           })
 
-          // Create mutation for product with variant references
-          const productMutation = {
-            createOrReplace: {
-              _type: 'product',
-              _id: `shopifyProduct-${productId}`,
-              store: {
-                _type: 'shopifyProduct',
-                id: parseInt(productId),
-                gid: product.id,
-                title: product.title,
-                slug: {
-                  _type: 'slug',
-                  current: product.handle,
-                },
-                descriptionHtml: product.descriptionHtml,
-                status: product.status,
-                productType: product.productType,
-                vendor: product.vendor,
-                tags: product.tags.join(', '),
-                previewImageUrl: product.featuredImage?.src || product.images[0]?.src,
-                images: images,
-                metafields: {
-                  details_column_01: metafields.details_column_01 || '',
-                  details_column_02: metafields.details_column_02 || '',
-                },
-                priceRange: {
-                  minVariantPrice: product.priceRange.minVariantPrice,
-                  maxVariantPrice: product.priceRange.maxVariantPrice,
-                },
-                options: product.options.map((opt) => ({
-                  _type: 'option',
-                  _key: opt.name,
-                  name: opt.name,
-                  values: opt.values,
-                })),
-                variants: product.variants.map((variant) => {
-                  const variantId = variant.id.replace('gid://shopify/ProductVariant/', '')
-                  return {
-                    _type: 'reference',
-                    _key: variantId,
-                    _ref: `shopifyProductVariant-${variantId}`,
-                    _weak: true,
-                  }
-                }),
-                createdAt: product.createdAt,
-                updatedAt: product.updatedAt,
-                isDeleted: false,
+          // Create mutation for product with variant references  
+          const baseSet: any = {
+            'store': {
+              _type: 'shopifyProduct',
+              id: parseInt(productId),
+              gid: product.id,
+              title: product.title,
+              slug: {
+                _type: 'slug',
+                current: product.handle,
               },
+              descriptionHtml: product.descriptionHtml,
+              status: product.status,
+              productType: product.productType,
+              vendor: product.vendor,
+              tags: product.tags.join(', '),
+              previewImageUrl: product.featuredImage?.src || product.images[0]?.src,
+              images: images,
+              metafields: {
+                details_column_01: metafields.details_column_01 || '',
+                details_column_02: metafields.details_column_02 || '',
+              },
+              priceRange: {
+                minVariantPrice: product.priceRange.minVariantPrice,
+                maxVariantPrice: product.priceRange.maxVariantPrice,
+              },
+              options: product.options.map((opt) => ({
+                _type: 'option',
+                _key: opt.name,
+                name: opt.name,
+                values: opt.values,
+              })),
+              variants: product.variants.map((variant) => {
+                const variantId = variant.id.replace('gid://shopify/ProductVariant/', '')
+                return {
+                  _type: 'reference',
+                  _key: variantId,
+                  _ref: `shopifyProductVariant-${variantId}`,
+                  _weak: true,
+                }
+              }),
+              createdAt: product.createdAt,
+              updatedAt: product.updatedAt,
+              isDeleted: false,
             },
           }
 
+          // Preserve existing custom fields if they exist
+          if (existingDoc?.body) {
+            baseSet.body = existingDoc.body
+            console.log(`Preserving body for product ${productId}`)
+          }
+          if (existingDoc?.thumbSize !== undefined) {
+            baseSet.thumbSize = existingDoc.thumbSize
+            console.log(`Preserving thumbSize (${existingDoc.thumbSize}) for product ${productId}`)
+          }
+          if (existingDoc?.seo) {
+            baseSet.seo = existingDoc.seo
+            console.log(`Preserving seo for product ${productId}`)
+          }
+
+          if (!existingDoc) {
+            console.log(`No existing custom fields found for product ${productId}`)
+          }
+
+          const productMutations = [
+            // First ensure the document exists with _type
+            {
+              createIfNotExists: {
+                _type: 'product',
+                _id: `shopifyProduct-${productId}`,
+              },
+            },
+            // Then patch ONLY the store field and re-set custom fields to preserve them
+            {
+              patch: {
+                id: `shopifyProduct-${productId}`,
+                set: baseSet,
+              },
+            }
+          ]
+
           // Return all mutations for this product (variants + product)
-          return [...variantMutations, productMutation]
+          return [...variantMutations, ...productMutations]
         })
       )
 
