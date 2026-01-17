@@ -1,6 +1,22 @@
 import {NextRequest, NextResponse} from 'next/server'
 import {createClient} from '@sanity/client'
 
+// Validate required environment variables
+const requiredEnvVars = {
+  SANITY_STUDIO_PROJECT_ID: process.env.SANITY_STUDIO_PROJECT_ID,
+  SANITY_API_WRITE_TOKEN: process.env.SANITY_API_WRITE_TOKEN,
+  SHOPIFY_STORE_DOMAIN: process.env.SHOPIFY_STORE_DOMAIN,
+  SHOPIFY_ADMIN_API_TOKEN: process.env.SHOPIFY_ADMIN_API_TOKEN,
+}
+
+const missingEnvVars = Object.entries(requiredEnvVars)
+  .filter(([_, value]) => !value)
+  .map(([key]) => key)
+
+if (missingEnvVars.length > 0) {
+  console.error('Missing required environment variables:', missingEnvVars.join(', '))
+}
+
 const sanityClient = createClient({
   projectId: process.env.SANITY_STUDIO_PROJECT_ID || '',
   dataset: process.env.SANITY_STUDIO_DATASET || 'production',
@@ -8,6 +24,17 @@ const sanityClient = createClient({
   token: process.env.SANITY_API_WRITE_TOKEN,
   useCdn: false,
 })
+
+// Handle OPTIONS for CORS preflight requests
+export async function OPTIONS(request: NextRequest) {
+  return NextResponse.json({}, {
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    },
+  })
+}
 
 // Fetch metafields from Shopify
 async function fetchProductMetafields(productGid: string) {
@@ -114,7 +141,14 @@ type WebhookPayload =
     }
 
 export async function POST(request: NextRequest) {
+  console.log('=== Shopify Webhook Received ===')
+  console.log('Request URL:', request.url)
+  console.log('Request method:', request.method)
+  console.log('Headers:', Object.fromEntries(request.headers.entries()))
+  
   try {
+    // Log that we're parsing the payload
+    console.log('Parsing webhook payload...')
     const payload: WebhookPayload = await request.json()
     // Log the full webhook payload for debugging
     console.log('Shopify Webhook Payload:', JSON.stringify(payload, null, 2))
@@ -131,7 +165,11 @@ export async function POST(request: NextRequest) {
       }))
 
       await sanityClient.transaction(mutations).commit()
-      return NextResponse.json({success: true})
+      return NextResponse.json({success: true}, {
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        },
+      })
     }
 
     // Handle product create/update/sync
@@ -181,15 +219,110 @@ export async function POST(request: NextRequest) {
             console.error('Error fetching latest product data from Shopify:', err)
           }
           
-          // Only use fetched variants if we successfully got them, otherwise fall back to webhook variants
+          // Merge fetched variants with webhook variants, preserving availableForSale from webhook if present
           if (fetchedVariants && fetchedVariants.length > 0) {
+            // Create a map of webhook variants by ID for quick lookup
+            const webhookVariantMap = new Map(product.variants.map(v => [v.id, v]))
+            
+            // Merge: use fetched data but preserve availableForSale from webhook if it exists
+            const mergedVariants = fetchedVariants.map(fetchedVariant => {
+              const webhookVariant = webhookVariantMap.get(fetchedVariant.id)
+              
+              // If webhook has availableForSale (from Sanity Connect), use it
+              if (webhookVariant && typeof webhookVariant.availableForSale === 'boolean') {
+                console.log(`Variant ${fetchedVariant.id}: Preserving availableForSale=${webhookVariant.availableForSale} from webhook`)
+                return {
+                  ...fetchedVariant,
+                  availableForSale: webhookVariant.availableForSale,
+                }
+              }
+              
+              // Otherwise use fetched variant as-is
+              return fetchedVariant
+            })
+            
+            // Verify that fetched variants have the same IDs as webhook variants
+            const webhookVariantIds = product.variants.map(v => v.id).sort()
+            const fetchedVariantIds = fetchedVariants.map(v => v.id).sort()
+            console.log('Webhook variant IDs:', webhookVariantIds)
+            console.log('Fetched variant IDs:', fetchedVariantIds)
+            
+            // Check availableForSale values from merged variants
+            mergedVariants.forEach(v => {
+              const vid = v.id.replace('gid://shopify/ProductVariant/', '')
+              console.log(`Merged variant ${vid}: availableForSale=${v.availableForSale} (type: ${typeof v.availableForSale})`)
+            })
+            
             fullProduct = {
               ...product,
-              variants: fetchedVariants,
+              variants: mergedVariants,
             }
-            console.log('Using fetched variant data with availability info')
+            console.log('✅ Using merged variant data (fetched + webhook availableForSale)')
           } else {
-            console.warn('Using webhook variant data - availability may be incomplete')
+            console.warn('⚠️ Admin API fetch failed, trying Storefront API to get availableForSale')
+            // Try Storefront API as fallback to get availableForSale
+            try {
+              const productHandle = product.handle
+              const storefrontResponse = await fetch(
+                `https://${process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN}/api/2024-01/graphql.json`,
+                {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'X-Shopify-Storefront-Access-Token': process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN || '',
+                  },
+                  body: JSON.stringify({
+                    query: `query getProduct($handle: String!) { product(handle: $handle) { id variants(first: 100) { edges { node { id availableForSale } } } } }`,
+                    variables: { handle: productHandle },
+                  }),
+                }
+              )
+              if (storefrontResponse.ok) {
+                const storefrontData = await storefrontResponse.json()
+                if (storefrontData.data?.product?.variants?.edges) {
+                  // Create a map of Storefront API variants by ID
+                  const storefrontVariantMap = new Map(
+                    storefrontData.data.product.variants.edges.map((edge: any) => [edge.node.id, edge.node.availableForSale])
+                  )
+                  
+                  // Merge Storefront API availableForSale into webhook variants
+                  const enrichedVariants = product.variants.map((variant) => {
+                    const storefrontAvailableForSale = storefrontVariantMap.get(variant.id)
+                    if (typeof storefrontAvailableForSale === 'boolean') {
+                      console.log(`Variant ${variant.id}: Got availableForSale=${storefrontAvailableForSale} from Storefront API`)
+                      return {
+                        ...variant,
+                        availableForSale: storefrontAvailableForSale,
+                      }
+                    }
+                    return variant
+                  })
+                  
+                  fullProduct = {
+                    ...product,
+                    variants: enrichedVariants,
+                  }
+                  console.log('✅ Enriched variants with availableForSale from Storefront API')
+                } else {
+                  console.warn('Storefront API response missing variant data structure')
+                }
+              } else {
+                const errorText = await storefrontResponse.text()
+                console.error('Failed to fetch from Storefront API:', storefrontResponse.status, errorText)
+              }
+            } catch (err) {
+              console.error('Error fetching from Storefront API:', err)
+            }
+            
+            // If we still don't have enriched variants, use webhook data
+            if (fullProduct === product) {
+              console.warn('⚠️ Using webhook variant data - availability may be incomplete')
+              // Log webhook variant availability
+              product.variants.forEach(v => {
+                const vid = v.id?.replace?.('gid://shopify/ProductVariant/', '') || 'unknown'
+                console.log(`Webhook variant ${vid}: availableForSale=${v.availableForSale} (type: ${typeof v.availableForSale})`)
+              })
+            }
           }
           product = fullProduct
           const productId = product.id.replace('gid://shopify/Product/', '')
@@ -248,26 +381,41 @@ export async function POST(request: NextRequest) {
             })
             
             // Use availableForSale directly from Shopify - it's the authoritative source
-            // Check if availableForSale is a boolean (true or false) - if so, use it directly
-            // Only fall back to inventory logic if availableForSale is null/undefined/not a boolean
+            // NOTE: Shopify Admin API GraphQL may not always return availableForSale
+            // If it's not available, we calculate from inventoryPolicy and inventoryQuantity
             let isAvailable: boolean
-            if (typeof variant.availableForSale === 'boolean') {
-              // availableForSale is explicitly a boolean from Shopify - use it directly (Shopify's source of truth)
-              isAvailable = variant.availableForSale
-              console.log(`Variant ${variantId} using availableForSale boolean from Shopify: ${isAvailable}`)
-            } else if (variant.inventoryPolicy === 'CONTINUE') {
-              // If inventory policy is CONTINUE, always available regardless of quantity
+            
+            // Check if availableForSale is explicitly true or false from Shopify
+            if (variant.availableForSale === true) {
               isAvailable = true
-              console.log(`Variant ${variantId} using CONTINUE policy: ${isAvailable} (availableForSale was not boolean: ${variant.availableForSale})`)
+              console.log(`✅ Variant ${variantId}: availableForSale=true from Shopify → isAvailable=true`)
+            } else if (variant.availableForSale === false) {
+              isAvailable = false
+              console.log(`❌ Variant ${variantId}: availableForSale=false from Shopify → isAvailable=false`)
             } else {
-              // Otherwise, check if inventory quantity is greater than 0
+              // availableForSale is undefined/null - calculate from inventory data
+              // First, normalize inventory quantity
               const inventoryQty = typeof variant.inventoryQuantity === 'number' 
                 ? variant.inventoryQuantity 
                 : (typeof variant.inventoryQuantity === 'string' 
                   ? parseInt(variant.inventoryQuantity, 10) 
-                  : 0)
-              isAvailable = inventoryQty > 0
-              console.log(`Variant ${variantId} using inventory quantity (${inventoryQty}): ${isAvailable} (availableForSale was not boolean: ${variant.availableForSale})`)
+                  : null)
+              
+              // Check inventory policy
+              if (variant.inventoryPolicy === 'CONTINUE') {
+                // If inventory policy is CONTINUE, always available regardless of quantity
+                isAvailable = true
+                console.log(`⚠️ Variant ${variantId}: availableForSale was ${variant.availableForSale}, inventoryPolicy=CONTINUE → isAvailable=true`)
+              } else if (variant.inventoryPolicy === 'DENY') {
+                // If inventory policy is DENY, only available if quantity > 0
+                // If inventoryQty is null/undefined, assume inventory tracking is disabled -> available
+                isAvailable = inventoryQty === null || inventoryQty === undefined ? true : inventoryQty > 0
+                console.log(`⚠️ Variant ${variantId}: availableForSale was ${variant.availableForSale}, inventoryPolicy=DENY, inventoryQty=${inventoryQty} → isAvailable=${isAvailable}`)
+              } else {
+                // Unknown policy or no policy - default to available if inventory not tracked, or check quantity
+                isAvailable = inventoryQty === null || inventoryQty === undefined ? true : inventoryQty > 0
+                console.log(`⚠️ Variant ${variantId}: availableForSale was ${variant.availableForSale}, inventoryPolicy=${variant.inventoryPolicy}, inventoryQty=${inventoryQty} → isAvailable=${isAvailable}`)
+              }
             }
             
             console.log(`Variant ${variantId} final calculated availability: ${isAvailable}`)
@@ -396,14 +544,42 @@ export async function POST(request: NextRequest) {
       const mutations = allMutations.flat()
 
       const result = await sanityClient.transaction(mutations as any).commit()
-      return NextResponse.json({success: true, synced: payload.products.length})
+      console.log('=== Sync Successful ===')
+      console.log(`Synced ${payload.products.length} products`)
+      return NextResponse.json({success: true, synced: payload.products.length}, {
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        },
+      })
     }
 
-    return NextResponse.json({success: false, error: 'Unknown action'}, {status: 400})
+    console.error('Unknown action in payload')
+    return NextResponse.json({success: false, error: 'Unknown action'}, {
+      status: 400,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+      },
+    })
   } catch (error) {
-    console.error('Shopify sync error:', error)
+    console.error('=== Shopify Sync Error ===')
+    console.error('Error type:', error instanceof Error ? error.constructor.name : typeof error)
+    console.error('Error message:', error instanceof Error ? error.message : String(error))
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace')
+    
+    // More detailed error information
+    if (error instanceof SyntaxError) {
+      console.error('JSON parsing error - check if the payload is valid JSON')
+    }
+    if (error instanceof TypeError) {
+      console.error('Type error - check if required fields are present')
+    }
+    
     return NextResponse.json(
-      {success: false, error: error instanceof Error ? error.message : 'Unknown error'},
+      {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        errorType: error instanceof Error ? error.constructor.name : typeof error
+      },
       {status: 500}
     )
   }
