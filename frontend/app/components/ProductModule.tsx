@@ -26,6 +26,7 @@ interface ProductDetailsProps {
       payment?: string
     }
   }
+  swiperHorizontal?: boolean
   showTerms?: boolean
   showEditorialContent?: boolean
 }
@@ -34,14 +35,16 @@ export default function ProductModule({
   product,
   showTerms = true,
   showEditorialContent = true,
+  swiperHorizontal = false,
 }: ProductDetailsProps) {
   return (
-    <div className={`${styles.productGrid}`}>
+    <div className={`${styles.productGrid} ${product.modules?.length ? styles.withEditorial : ''}`}>
       {/* Product Images from Shopify */}
       {product.store.images && product.store.images.length > 0 && (
         <ProductImagesSwiper
           images={product.store.images}
           productTitle={product.store.title}
+          swiperHorizontal={swiperHorizontal}
         />
       )}
 
@@ -60,7 +63,7 @@ export default function ProductModule({
                   price: v.store.price,
                   compareAtPrice: v.store.compareAtPrice,
                   sku: v.store.sku,
-                  availableForSale: v.store.inventory?.isAvailable ?? false,
+                  availableForSale: v.availableForSale ?? v.store.inventory?.isAvailable ?? true,
                 }))}
               productTitle={product.store.title}
             />

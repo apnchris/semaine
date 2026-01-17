@@ -231,6 +231,7 @@ export default async function ProductsPage() {
                           payment: shopPage?.payment
                         }
                       }}
+                      swiperHorizontal={true}
                       showTerms={false}
                       showEditorialContent={false}
                     />

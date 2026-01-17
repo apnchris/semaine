@@ -5,7 +5,8 @@
   position: relative;
 }
 
-.productSwipeNext {
+.productSwipeNext,
+.productSwipePrev {
   position: absolute;
   bottom: 0;
   left: 50%;
@@ -16,13 +17,32 @@
   mix-blend-mode: difference;
 }
 
+.horizontalSwiper .productSwipeNext,
+.horizontalSwiper .productSwipePrev {
+  top: 50%;
+  bottom: auto;
+  left: auto;
+  transform: translateY(-50%);
+  padding: 7px 12px;
+}
+
+.horizontalSwiper .productSwipePrev {
+  left: 0;
+}
+
+.horizontalSwiper .productSwipeNext {
+  right: 0;
+  transform: translateY(-50%) rotate(180deg);
+}
+
 .productImage {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.productSwipeNext :global(path) {
+.productSwipeNext :global(path),
+.productSwipePrev :global(path) {
   fill: #fff;
 }
 

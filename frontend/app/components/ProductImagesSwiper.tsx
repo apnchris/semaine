@@ -20,25 +20,27 @@ type ImageType = {
 type Props = {
   images: ImageType[]
   productTitle: string
+  swiperHorizontal?: boolean
 }
 
-export default function ProductImagesSwiper({images, productTitle}: Props) {
+export default function ProductImagesSwiper({images, productTitle, swiperHorizontal = false}: Props) {
   const swiperRef = useRef<Swiper | null>(null)
 
   useEffect(() => {
     if (!swiperRef.current) {
       swiperRef.current = new Swiper('.product-swiper', {
         modules: [Navigation, Pagination, Mousewheel],
-        direction: 'vertical',
-        loop: false,
+        direction: swiperHorizontal ? 'horizontal' : 'vertical',
+        loop: swiperHorizontal ? true : false,
         slidesPerView: 1,
         spaceBetween: 0,
         navigation: {
+          prevEl: '.product-swipe-prev',
           nextEl: '.product-swipe-next',
         },
         mousewheel: {
           enabled: true,
-          forceToAxis: false,
+          forceToAxis: true,
           releaseOnEdges: true,
         },
         pagination: {
@@ -58,7 +60,7 @@ export default function ProductImagesSwiper({images, productTitle}: Props) {
   }, [images.length])
 
   return (
-    <div className={`${styles.productImages}`}>
+    <div className={`${styles.productImages} ${swiperHorizontal ? styles.horizontalSwiper : ''}`}>
       <div className={`${styles.productSwiper} product-swiper`}>
         <div className="swiper-wrapper">
           {images.map((image: ImageType, index: number) => (
@@ -81,6 +83,11 @@ export default function ProductImagesSwiper({images, productTitle}: Props) {
         <div className={`${styles.productSwipeNext} product-swipe-next`}>
           <ArrowIcon />
         </div>
+        {swiperHorizontal && (
+          <div className={`${styles.productSwipePrev} product-swipe-prev`}>
+            <ArrowIcon />
+          </div>
+        )}
       </div>
     </div>
   )

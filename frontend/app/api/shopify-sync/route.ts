@@ -190,6 +190,7 @@ export async function POST(request: NextRequest) {
               createOrReplace: {
                 _type: 'productVariant',
                 _id: `shopifyProductVariant-${variantId}`,
+                availableForSale: isAvailable, // <-- Add this line
                 store: {
                   _type: 'shopifyProductVariant',
                   id: parseInt(variantId),

@@ -1,6 +1,6 @@
 'use client'
 
-import {useState} from 'react'
+import {useState, useEffect} from 'react'
 import {useCart} from '@/app/context/CartContext'
 import styles from '../css/components/productPage.module.css'
 
@@ -18,14 +18,35 @@ interface AddToCartProps {
 
 export default function AddToCart({variants, productTitle}: AddToCartProps) {
   const {addItem, isLoading, openCart} = useCart()
-  const [selectedVariant, setSelectedVariant] = useState(variants[0]?.id || '')
+  const firstVariantId = variants[0]?.id || ''
+  const [selectedVariant, setSelectedVariant] = useState(firstVariantId)
+
+  // Keep selectedVariant in sync with variants prop (especially for single-variant products)
+  useEffect(() => {
+    if (variants.length === 1) {
+      setSelectedVariant(firstVariantId)
+    }
+  }, [firstVariantId, variants.length])
   const [quantity, setQuantity] = useState(1)
   const [message, setMessage] = useState('')
 
-  const selectedVariantData = variants.find((v) => v.id === selectedVariant)
+
+  // For single-variant products, always use the first variant
+  const currentVariantId = variants.length === 1 ? firstVariantId : selectedVariant
+  // Defensive: ensure both are strings for comparison
+  const selectedVariantData = variants.find((v) => String(v.id) === String(currentVariantId))
+
+  // Debug: Log variant data and matching
+  console.log('Variants:', variants)
+  console.log('currentVariantId:', currentVariantId)
+  console.log('selectedVariant:', selectedVariant)
+  console.log('Selected Variant Data:', selectedVariantData)
+  console.log('Available for sale:', selectedVariantData?.availableForSale)
 
   const handleAddToCart = async () => {
-    if (!selectedVariant) {
+    const variantToAdd = variants.length === 1 ? firstVariantId : selectedVariant
+    
+    if (!variantToAdd) {
       setMessage('Please select a variant')
       return
     }
@@ -41,7 +62,7 @@ export default function AddToCart({variants, productTitle}: AddToCartProps) {
     }
 
     try {
-      await addItem(selectedVariant, quantity)
+      await addItem(variantToAdd, quantity)
       setMessage('Added to cart!')
       
       // Open the cart sidebar
@@ -82,7 +103,7 @@ export default function AddToCart({variants, productTitle}: AddToCartProps) {
       <label className={`${styles.addToCartButtonContainer} ${isLoading || !selectedVariantData?.availableForSale ? styles.disabled : ''}`}>
         <button
           onClick={handleAddToCart}
-          disabled={isLoading || !selectedVariantData?.availableForSale}
+          // disabled={isLoading || !selectedVariantData?.availableForSale}
           className={`${styles.addToCartButton}`}
         >
           {isLoading

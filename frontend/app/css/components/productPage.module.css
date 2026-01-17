@@ -92,6 +92,7 @@
   padding: 0 30px;
   width: calc(var(--column) * 2 + var(--gap) * 1);
   cursor: pointer;
+  text-align: center;
 }
 
 .disabled {
@@ -104,6 +105,6 @@
   display: none;
 }
 
-.productEditorialContent {
+.withEditorial .productEditorialContent {
   padding-bottom: 83px;
 }

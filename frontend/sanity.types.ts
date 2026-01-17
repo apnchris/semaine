@@ -916,7 +916,7 @@ export type TASTEBREAKER_QUERY_RESULT = null
 
 // Source: sanity/lib/queries.ts
 // Variable: allProductsQuery
-// Query: *[_type == "product" && !store.isDeleted] | order(store.title asc) {    _id,    _type,    colorTheme->{      title,      text,      background    },    store {      id,      title,      slug,      status,      previewImageUrl,      priceRange {        minVariantPrice,        maxVariantPrice      },      productType,      vendor,      tags    },    seo {      title,      description    }  }
+// Query: *[_type == "product" && !store.isDeleted] | order(store.title asc) {    _id,    _type,    thumbSize,    store {      id,      title,      slug,      status,      previewImageUrl,      priceRange {        minVariantPrice,        maxVariantPrice      },      productType,      vendor,      tags    },    seo {      title,      description    }  }
 export type AllProductsQueryResult = Array<never>
 
 // Query TypeMap
@@ -933,6 +933,6 @@ declare module '@sanity/client' {
     '\n  *[_type == "page" && defined(slug.current)]\n  {"slug": slug.current}\n': PagesSlugsResult
     '\n  *[_type == "tasteMaker" && slug.current == $slug][0] {\n    _id,\n    name,\n    title,\n    picture {\n      asset->,\n      alt\n    }\n  }\n': TASTEMAKER_QUERY_RESULT
     '\n  *[_type == "tasteBreaker" && slug.current == $slug][0] {\n    _id,\n    name,\n    title,\n    picture {\n      asset->,\n      alt\n    }\n  }\n': TASTEBREAKER_QUERY_RESULT
-    '\n  *[_type == "product" && !store.isDeleted] | order(store.title asc) {\n    _id,\n    _type,\n    colorTheme->{\n      title,\n      text,\n      background\n    },\n    store {\n      id,\n      title,\n      slug,\n      status,\n      previewImageUrl,\n      priceRange {\n        minVariantPrice,\n        maxVariantPrice\n      },\n      productType,\n      vendor,\n      tags\n    },\n    seo {\n      title,\n      description\n    }\n  }\n': AllProductsQueryResult
+    '\n  *[_type == "product" && !store.isDeleted] | order(store.title asc) {\n    _id,\n    _type,\n    thumbSize,\n    store {\n      id,\n      title,\n      slug,\n      status,\n      previewImageUrl,\n      priceRange {\n        minVariantPrice,\n        maxVariantPrice\n      },\n      productType,\n      vendor,\n      tags\n    },\n    seo {\n      title,\n      description\n    }\n  }\n': AllProductsQueryResult
   }
 }
