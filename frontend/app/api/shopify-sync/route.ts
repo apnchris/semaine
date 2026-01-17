@@ -116,6 +116,8 @@ type WebhookPayload =
 export async function POST(request: NextRequest) {
   try {
     const payload: WebhookPayload = await request.json()
+    // Log the full webhook payload for debugging
+    console.log('Shopify Webhook Payload:', JSON.stringify(payload, null, 2))
 
     // Handle product deletion
     if (payload.action === 'delete') {
@@ -136,6 +138,60 @@ export async function POST(request: NextRequest) {
     if ('products' in payload) {
       const allMutations = await Promise.all(
         payload.products.map(async (product) => {
+          // Always fetch the latest product data from Shopify (with availableForSale)
+          let fullProduct = product
+          let fetchedVariants: any[] | null = null
+          try {
+            const shopifyProductId = product.id
+            const shopifyResponse = await fetch(
+              `https://${process.env.SHOPIFY_STORE_DOMAIN}/admin/api/2024-01/graphql.json`,
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'X-Shopify-Access-Token': process.env.SHOPIFY_ADMIN_API_TOKEN || '',
+                },
+                body: JSON.stringify({
+                  query: `query getProduct($id: ID!) { product(id: $id) { id title variants(first: 100) { edges { node { id title availableForSale inventoryQuantity inventoryPolicy sku price compareAtPrice selectedOptions { name value } image { src } } } } } } }`,
+                  variables: { id: shopifyProductId },
+                }),
+              }
+            )
+            if (shopifyResponse.ok) {
+              const shopifyData = await shopifyResponse.json()
+              console.log('Shopify API response for', product.id, ':', JSON.stringify(shopifyData, null, 2))
+              if (shopifyData.data?.product?.variants?.edges) {
+                // Extract and validate the latest variant data from Shopify
+                const mappedVariants = shopifyData.data.product.variants.edges.map((edge: any) => edge.node)
+                fetchedVariants = mappedVariants
+                console.log('Fetched latest variant data from Shopify for', product.id, `(${mappedVariants.length} variants)`)
+                // Log sample variant to verify availableForSale is present
+                if (mappedVariants.length > 0) {
+                  console.log('Sample fetched variant:', JSON.stringify(mappedVariants[0], null, 2))
+                }
+              } else {
+                console.warn('Shopify API response missing variant data structure for', product.id)
+                console.warn('Response structure:', JSON.stringify(shopifyData, null, 2))
+              }
+            } else {
+              const errorText = await shopifyResponse.text()
+              console.error('Failed to fetch latest product data from Shopify:', shopifyResponse.status, shopifyResponse.statusText, errorText)
+            }
+          } catch (err) {
+            console.error('Error fetching latest product data from Shopify:', err)
+          }
+          
+          // Only use fetched variants if we successfully got them, otherwise fall back to webhook variants
+          if (fetchedVariants && fetchedVariants.length > 0) {
+            fullProduct = {
+              ...product,
+              variants: fetchedVariants,
+            }
+            console.log('Using fetched variant data with availability info')
+          } else {
+            console.warn('Using webhook variant data - availability may be incomplete')
+          }
+          product = fullProduct
           const productId = product.id.replace('gid://shopify/Product/', '')
 
           // Fetch existing document to preserve custom fields (check both published and draft)
@@ -180,17 +236,46 @@ export async function POST(request: NextRequest) {
           // Create mutations for variants (as separate documents)
           const variantMutations = product.variants.map((variant) => {
             const variantId = variant.id.replace('gid://shopify/ProductVariant/', '')
+            // Log full variant data for debugging
+            console.log(`Variant ${variantId} full data:`, JSON.stringify(variant, null, 2))
             
-            // Calculate availability based on inventory policy and quantity
-            const isAvailable = variant.inventoryPolicy === 'CONTINUE' 
-              ? true 
-              : (variant.inventoryQuantity ?? 0) > 0
+            // Log variant availability data for debugging
+            console.log(`Variant ${variantId} availability check:`, {
+              availableForSale: variant.availableForSale,
+              typeofAvailableForSale: typeof variant.availableForSale,
+              inventoryQuantity: variant.inventoryQuantity,
+              inventoryPolicy: variant.inventoryPolicy,
+            })
             
+            // Use availableForSale directly from Shopify - it's the authoritative source
+            // Check if availableForSale is a boolean (true or false) - if so, use it directly
+            // Only fall back to inventory logic if availableForSale is null/undefined/not a boolean
+            let isAvailable: boolean
+            if (typeof variant.availableForSale === 'boolean') {
+              // availableForSale is explicitly a boolean from Shopify - use it directly (Shopify's source of truth)
+              isAvailable = variant.availableForSale
+              console.log(`Variant ${variantId} using availableForSale boolean from Shopify: ${isAvailable}`)
+            } else if (variant.inventoryPolicy === 'CONTINUE') {
+              // If inventory policy is CONTINUE, always available regardless of quantity
+              isAvailable = true
+              console.log(`Variant ${variantId} using CONTINUE policy: ${isAvailable} (availableForSale was not boolean: ${variant.availableForSale})`)
+            } else {
+              // Otherwise, check if inventory quantity is greater than 0
+              const inventoryQty = typeof variant.inventoryQuantity === 'number' 
+                ? variant.inventoryQuantity 
+                : (typeof variant.inventoryQuantity === 'string' 
+                  ? parseInt(variant.inventoryQuantity, 10) 
+                  : 0)
+              isAvailable = inventoryQty > 0
+              console.log(`Variant ${variantId} using inventory quantity (${inventoryQty}): ${isAvailable} (availableForSale was not boolean: ${variant.availableForSale})`)
+            }
+            
+            console.log(`Variant ${variantId} final calculated availability: ${isAvailable}`)
             return {
               createOrReplace: {
                 _type: 'productVariant',
                 _id: `shopifyProductVariant-${variantId}`,
-                availableForSale: isAvailable, // <-- Add this line
+                availableForSale: isAvailable,
                 store: {
                   _type: 'shopifyProductVariant',
                   id: parseInt(variantId),
