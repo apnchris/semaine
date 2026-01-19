@@ -52,34 +52,30 @@ export default async function TasteMakerPage({params}: Props) {
 
   return (
     <article className={`${styles.tastemakerPage}`}>
-      <div className={`${styles.tastemakerPageGrid}`}>
-        <div className={`${styles.tastemakerCover}`}>
-          <div className={`${styles.tastemakerHeader}`}>
-            <div className={`${styles.tastemakerHeaderType}`}>
-              <p className={`${styles.tastemakerHeaderTypeText} uppercase`}>
-                Taste<br />Maker
-              </p>
-            </div>
-
-            <div>
-              <h1 className={`${styles.tastemakerName}`}>{profile.name}</h1>
-              <h2 className={`${styles.tastemakerTitle}`}>{profile.title}</h2>
-            </div>
+      <div className={`${styles.tastemakerCover}`}>
+        <div className={`${styles.tastemakerHeader}`}>
+          <div className={`${styles.tastemakerHeaderType}`}>
+            <p className={`${styles.tastemakerHeaderTypeText} uppercase`}>
+              Taste<br />Breaker
+            </p>
           </div>
 
-          {profile.picture && (
-            <div className={`${styles.tastemakerImage}`}>
-              <SanityImage
-                id={profile.picture.asset._id}
-                alt={profile.picture.alt || profile.name}
-                width={800}
-                height={800}
-              />
-            </div>
-          )}
+          <div>
+            <h1 className={`${styles.tastemakerName}`}>{profile.name}</h1>
+            <h2 className={`${styles.tastemakerTitle}`}>{profile.title}</h2>
+          </div>
         </div>
 
-        <div className={`${styles.tastemakerContent}`}></div>
+        {profile.picture && (
+          <div className={`${styles.tastemakerImage}`}>
+            <SanityImage
+              id={profile.picture.asset._id}
+              alt={profile.picture.alt || profile.name}
+              width={800}
+              height={800}
+            />
+          </div>
+        )}
       </div>
     </article>
   )

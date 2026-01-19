@@ -35,15 +35,15 @@
   gap: var(--gap);
 }
 
-.productDescription {
+.productInfoBlock:nth-child(2) {
   background-color: #F5F5F5;
 }
 
-.productDetails {
+.productInfoBlock:nth-child(3) {
   background-color: #DADADA;
 }
 
-.productTerms {
+.productInfoBlock:nth-child(4) {
   background-color: #B1B1B1;
 }
 

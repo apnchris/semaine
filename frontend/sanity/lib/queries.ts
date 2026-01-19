@@ -121,8 +121,9 @@ export const pagesSlugs = defineQuery(`
 `)
 
 export const TASTEMAKER_QUERY = defineQuery(`
-  *[_type == "tasteMaker" && slug.current == $slug][0] {
+  *[(_type == "tasteMaker" || _type == "tasteBreaker") && slug.current == $slug][0] {
     _id,
+    _type,
     name,
     title,
     picture {

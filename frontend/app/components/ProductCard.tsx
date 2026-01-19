@@ -1,4 +1,7 @@
+'use client'
+
 import Link from 'next/link'
+import {formatPrice} from '@/app/client-utils'
 import styles from '../css/components/productCard.module.css'
 
 
@@ -55,11 +58,11 @@ export default function ProductCard({product}: ProductCardProps) {
         {/* Price */}
         {product.store.priceRange?.minVariantPrice && (
           <div>
-            EUR {product.store.priceRange.minVariantPrice}
+            EUR {formatPrice(product.store.priceRange.minVariantPrice)}
             {product.store.priceRange.maxVariantPrice &&
               product.store.priceRange.maxVariantPrice !==
                 product.store.priceRange.minVariantPrice && (
-                <span>EUR {product.store.priceRange.maxVariantPrice}</span>
+                <span> EUR {formatPrice(product.store.priceRange.maxVariantPrice)}</span>
               )}
           </div>
         )}

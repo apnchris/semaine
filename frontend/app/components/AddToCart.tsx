@@ -2,6 +2,7 @@
 
 import {useState, useEffect} from 'react'
 import {useCart} from '@/app/context/CartContext'
+import {formatPrice} from '@/app/client-utils'
 import styles from '../css/components/productPage.module.css'
 
 interface AddToCartProps {
@@ -113,7 +114,7 @@ export default function AddToCart({variants, productTitle}: AddToCartProps) {
               : 'Add to Cart'}
         </button>
 
-        <span className={styles.productPrice}>${selectedVariantData?.price}</span>
+        <span className={styles.productPrice}>${selectedVariantData?.price ? formatPrice(selectedVariantData.price) : ''}</span>
       </label>
 
       {message && (

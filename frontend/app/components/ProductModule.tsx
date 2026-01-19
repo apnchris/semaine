@@ -71,7 +71,7 @@ export default function ProductModule({
         </div>
 
         {/* Shopify Description */}
-        {product.store.descriptionHtml && (
+        {product.store.descriptionHtml && product.store.descriptionHtml.trim() && (
           <div
             className={`${styles.productDescription} ${styles.productInfoBlock} book`}
             dangerouslySetInnerHTML={{__html: product.store.descriptionHtml}}
@@ -79,7 +79,8 @@ export default function ProductModule({
         )}
 
         {/* Shopify Metafields */}
-        {product.store.metafields && (
+        {product.store.metafields && 
+         (product.store.metafields.details_column_01 || product.store.metafields.details_column_02) && (
           <div className={`${styles.productDetails} ${styles.productInfoBlock} book`}>
             <div className={`${styles.productInfoBlockGrid}`}>
               {product.store.metafields.details_column_01 && (
@@ -101,7 +102,8 @@ export default function ProductModule({
         )}
 
         {/* Shopping Terms */}
-        {showTerms && product.shopPage && (
+        {showTerms && product.shopPage && 
+         (product.shopPage.shipping || product.shopPage.returns || product.shopPage.payment) && (
           <div className={`${styles.productTerms} ${styles.productInfoBlock} book`}>
             <div className={`${styles.productInfoBlockGrid}`}>
               <div className={`${styles.productTermsColumn}`}>

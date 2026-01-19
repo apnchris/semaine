@@ -109,9 +109,8 @@ export default function LearnClient({pageData, sortedEntries}: LearnClientProps)
               filteredItems.map((entry: LearnEntry) => {
                 const isNotHovered = hoveredEntry && hoveredEntry._id !== entry._id
                 return (
-                  <div className={`${styles.learnCard} ${isNotHovered ? styles.notHovered : ''}`}>
+                  <div key={entry._id} className={`${styles.learnCard} ${isNotHovered ? styles.notHovered : ''}`}>
                     <Link
-                      key={entry._id}
                       href={`/learn/${entry.slug.current}`}
                       className={`${styles.learnCardLink}`}
                     >

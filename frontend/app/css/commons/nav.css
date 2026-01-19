@@ -58,7 +58,7 @@ body.at-bottom:not(.page-product) header {
 .cart-trigger span {
   position: absolute;
   top: 66%;
-  left: 50%;
+  left: 48%;
   transform: translate(-50%, -50%);
 }
 

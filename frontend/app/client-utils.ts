@@ -3,6 +3,18 @@
 import {isCorsOriginError} from 'next-sanity/live'
 import {toast} from 'sonner'
 
+/**
+ * Formats a price number to remove trailing zeros when there are no decimals
+ * @param price - The price as a number or string
+ * @returns The formatted price string without trailing zeros
+ */
+export function formatPrice(price: number | string): string {
+  const numPrice = typeof price === 'string' ? parseFloat(price) : price
+  // Convert to string and remove trailing zeros after decimal point
+  // This will turn "10.00" into "10", "10.50" into "10.5", but keep "100" as "100"
+  return numPrice.toString().replace(/\.0+$/, '')
+}
+
 export function handleError(error: unknown) {
   if (isCorsOriginError(error)) {
     // If the error is a CORS origin error, let's display that specific error.

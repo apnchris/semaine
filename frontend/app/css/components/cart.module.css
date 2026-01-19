@@ -1,0 +1,113 @@
+.cartContainer {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(var(--column) * 3 + var(--gap) * 2);
+  z-index: 110;
+  box-shadow: 0px -3px 8px 0px #00000014;
+  background: #fff;
+  border-radius: 12px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  padding: 30px 8px 60px;
+  min-width: 400px;
+  max-height: calc(100dvh - 160px);
+}
+
+.closeButton {
+  position: fixed;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  background: #EBEBEBCC;
+  color: #7C7C7C;
+  padding: 10px;
+  border-radius: 8px;
+  z-index: 110;
+  backdrop-filter: blur(15px);
+  width: fit-content;
+}
+
+.cartTitle {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.cartSummary {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.cartItem {
+  display: grid;
+  grid-template-columns: max-content 2fr 1fr max-content;
+  gap: 10px;
+}
+
+.cartItemImage {
+  width: 90px;
+  height: 115px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.cartItemTitle,
+.cartItemTitle :global(.font-s),
+.cartItemTotalPrice,
+.cartItemTotalPrice :global(.font-s) {
+  line-height: .8;
+}
+
+.cartItems {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.productInfoBlockGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 25px;
+}
+
+.productTermsColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.quantityControls {
+  display: flex;
+}
+
+.quantityInput {
+  all: unset;
+  appearance: textfield;
+  width: 25px;
+  text-align: center;
+}
+
+.quantityInput::-webkit-outer-spin-button,
+.quantityInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.checkoutButtonContainer {
+  height: 43px;
+  width: calc(var(--column) * 2 + var(--gap) * 1);
+  cursor: pointer;
+  text-align: center;
+  border-radius: 22px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 30px;
+  display: flex;
+  color: #fff;
+  background-color: #000000CC;  
+  min-width: 228px;
+  margin: 25px auto 0;
+}
